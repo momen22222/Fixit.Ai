@@ -33,6 +33,7 @@ export default function DashboardPage() {
           A daily snapshot that adapts to recovery, life stage, symptoms, and available time instead of forcing a
           generic plan.
         </p>
+        <p className="eyebrow">Deployment test: GitHub to Vercel is connected.</p>
       </div>
 
       <div className="summary-grid">
