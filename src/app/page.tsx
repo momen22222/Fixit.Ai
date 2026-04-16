@@ -71,7 +71,7 @@ export default function Home() {
 
         <div className="hero-panel" id="dashboard">
           <div className="plan-topline">
-            <span>Today for Maya</span>
+            <span>Today for Paige</span>
             <span>Postpartum recovery</span>
           </div>
 

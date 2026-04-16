@@ -417,6 +417,12 @@ a {
   font-weight: 600;
 }
 
+.input-help {
+  margin: 0;
+  color: rgba(31, 24, 32, 0.72);
+  line-height: 1.55;
+}
+
 .chip-grid {
   display: flex;
   flex-wrap: wrap;
@@ -430,12 +436,53 @@ a {
   padding: 0.75rem 1rem;
   font: inherit;
   color: inherit;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  border-color: rgba(91, 45, 69, 0.24);
 }
 
 .chip.active {
   background: var(--color-plum);
   border-color: var(--color-plum);
   color: white;
+}
+
+.progress-track {
+  margin-top: 1rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgba(91, 45, 69, 0.08);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-rose), var(--color-plum));
+  transition: width 220ms ease;
+}
+
+.onboarding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(91, 45, 69, 0.12);
+}
+
+.primary-action.is-disabled,
+.primary-action:disabled,
+.secondary-action:disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .range-row {
