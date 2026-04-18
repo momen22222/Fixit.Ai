@@ -106,6 +106,8 @@ export const baseVendors: Vendor[] = [
   }
 ];
 
+export let vendorStore = [...baseVendors];
+
 function buildIssuePhoto(name: string, id: string) {
   return {
     id,
@@ -506,7 +508,6 @@ export const seedIssues: MaintenanceIssue[] = [
   }
 ];
 
-export let vendorStore = [...baseVendors];
 export let issueStore = [...seedIssues];
 export let workOrderStore: WorkOrder[] = [
   {
