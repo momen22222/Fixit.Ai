@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const navItems = [
-  { href: "/app/dashboard", label: "Dashboard" },
-  { href: "/app/issues/new", label: "Report issue" },
-  { href: "/app/manager/approvals", label: "Approvals" },
+  { href: "/app/issues/new", label: "New request" },
+  { href: "/app/dashboard", label: "Status" },
+  { href: "/app/manager/approvals", label: "Manager" },
   { href: "/app/manager/vendors", label: "Vendors" }
 ];
 
@@ -16,8 +16,8 @@ export default function AppLayout({
     <div className="app-shell">
       <header className="topbar">
         <Link className="brand-lockup" href="/">
-          <span className="brand-mark">FieldFix PM</span>
-          <span className="brand-subtitle">AI triage for property operations</span>
+          <span className="brand-mark">Fix it AI</span>
+          <span className="brand-subtitle">Tenant-first maintenance assistant</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary">
@@ -28,8 +28,8 @@ export default function AppLayout({
           ))}
         </nav>
 
-        <Link className="button button-secondary" href="/onboarding">
-          Invite flow
+        <Link className="header-cta" href="/app/issues/new">
+          Report issue
         </Link>
       </header>
 

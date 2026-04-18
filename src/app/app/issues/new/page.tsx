@@ -2,13 +2,13 @@ import { TenantIssueIntake } from "@/components/TenantIssueIntake";
 
 export default function NewIssuePage() {
   return (
-    <section className="page-stack">
-      <div className="page-heading">
-        <p className="eyebrow">Tenant issue flow</p>
-        <h1>Capture the issue once, then let AI decide whether it is safe to self-fix or ready for dispatch.</h1>
+    <section className="tenant-page">
+      <div className="tenant-page-copy">
+        <p className="landing-kicker">Tenant request</p>
+        <h1>Take a picture and tell us what is wrong.</h1>
         <p>
-          This intake route is designed for a phone-sized screen first, with camera upload, short answers, and a clear
-          path into the manager review queue.
+          Keep this screen simple enough for a tenant to use while standing in front of the problem on their phone.
+          The AI should do the hard part after the photo is submitted.
         </p>
       </div>
 

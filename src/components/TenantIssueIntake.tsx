@@ -47,10 +47,10 @@ export function TenantIssueIntake() {
 
     setPreflight(
       urgency === "emergency"
-        ? "Emergency bypass will trigger. The app will show safety steps and alert the manager immediately."
+        ? "This looks urgent. The app will skip DIY help, show safety instructions, and alert the manager."
         : urgency === "priority"
-          ? "This looks like a priority maintenance issue. The app will guide safe checks, then prepare a manager review."
-          : "This looks like a routine issue. The AI will guide safe DIY checks before requesting a vendor."
+          ? "This may need fast review. AI will check for safe first steps, then prepare a manager summary."
+          : "The AI can likely start with a few safe checks before anyone is scheduled."
     );
   }
 
@@ -81,89 +81,21 @@ export function TenantIssueIntake() {
   }
 
   return (
-    <div className="tenant-grid">
-      <section className="surface surface-strong">
-        <div className="section-copy">
-          <p className="section-tag">Tenant intake</p>
-          <h2>Report the issue from your phone and let AI do the first pass.</h2>
-          <p>
-            Upload photos, describe what is happening, and the app will separate emergency situations from simple
-            fixes a tenant can try safely with common household tools.
-          </p>
+    <div className="tenant-intake-shell">
+      <section className="intake-panel">
+        <div className="intake-header">
+          <div>
+            <p className="intake-label">Step 1</p>
+            <h2>Start with the photo</h2>
+          </div>
+          <p className="intake-help">Tenants should be able to finish this in under a minute.</p>
         </div>
 
-        <form className="form-grid" onSubmit={handleSubmit}>
-          <label className="field">
-            <span>Unit</span>
-            <select
-              value={form.unitId}
-              onChange={(event) => {
-                const nextForm = { ...form, unitId: event.target.value };
-                setForm(nextForm);
-              }}
-            >
-              {units.map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.label} - Maple Court Homes
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Issue category</span>
-            <select
-              value={form.category}
-              onChange={async (event) => {
-                const nextForm = { ...form, category: event.target.value };
-                setForm(nextForm);
-                if (nextForm.description.trim()) {
-                  await runPreflight(nextForm);
-                }
-              }}
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field field-full">
-            <span>Describe what is happening</span>
-            <textarea
-              rows={5}
-              value={form.description}
-              onChange={async (event) => {
-                const nextForm = { ...form, description: event.target.value };
-                setForm(nextForm);
-                if (event.target.value.trim().length > 20) {
-                  await runPreflight(nextForm);
-                }
-              }}
-              placeholder="Example: The dishwasher finishes but leaves standing water and makes a low humming sound."
-            />
-          </label>
-
-          <label className="field">
-            <span>When can a vendor come by?</span>
-            <select
-              value={form.tenantAvailability}
-              onChange={(event) => {
-                setForm({ ...form, tenantAvailability: event.target.value });
-              }}
-            >
-              {availabilityOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Photo upload</span>
+        <form className="tenant-form" onSubmit={handleSubmit}>
+          <div className="camera-dropzone">
+            <div className="camera-icon" />
+            <strong>Add a photo or open the camera</strong>
+            <p>Show the broken appliance, leak, damage, or display panel.</p>
             <input
               accept="image/*"
               capture="environment"
@@ -177,116 +109,182 @@ export function TenantIssueIntake() {
                 });
               }}
             />
-          </label>
+            <span>{form.photos.length ? `${form.photos.length} photo(s) selected` : "No photo selected yet"}</span>
+          </div>
 
-          <label className="checkbox-row field-full">
-            <input
-              checked={form.permissionToEnter}
-              type="checkbox"
-              onChange={(event) => {
-                setForm({ ...form, permissionToEnter: event.target.checked });
+          <label className="tenant-field tenant-field-wide">
+            <span>What do you need help with?</span>
+            <textarea
+              rows={4}
+              value={form.description}
+              onChange={async (event) => {
+                const nextForm = { ...form, description: event.target.value };
+                setForm(nextForm);
+                if (event.target.value.trim().length > 20) {
+                  await runPreflight(nextForm);
+                }
               }}
+              placeholder="Example: The dishwasher finishes but leaves standing water in the bottom."
             />
-            <span>Vendor may enter with management if I am not home.</span>
           </label>
 
-          {preflight ? <p className="inline-note">{preflight}</p> : null}
+          <div className="tenant-grid">
+            <label className="tenant-field">
+              <span>Issue type</span>
+              <select
+                value={form.category}
+                onChange={async (event) => {
+                  const nextForm = { ...form, category: event.target.value };
+                  setForm(nextForm);
+                  if (nextForm.description.trim()) {
+                    await runPreflight(nextForm);
+                  }
+                }}
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="tenant-field">
+              <span>Unit</span>
+              <select
+                value={form.unitId}
+                onChange={(event) => {
+                  setForm({ ...form, unitId: event.target.value });
+                }}
+              >
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.label} - Maple Court Homes
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="tenant-grid">
+            <label className="tenant-field">
+              <span>When can someone come by?</span>
+              <select
+                value={form.tenantAvailability}
+                onChange={(event) => {
+                  setForm({ ...form, tenantAvailability: event.target.value });
+                }}
+              >
+                {availabilityOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="tenant-toggle">
+              <input
+                checked={form.permissionToEnter}
+                type="checkbox"
+                onChange={(event) => {
+                  setForm({ ...form, permissionToEnter: event.target.checked });
+                }}
+              />
+              <div>
+                <strong>Permission to enter</strong>
+                <p>Allow management or a vendor to enter if you are away.</p>
+              </div>
+            </label>
+          </div>
+
+          {preflight ? <p className="preflight-banner">{preflight}</p> : null}
           {error ? <p className="error-note">{error}</p> : null}
 
-          <div className="action-row">
-            <button className="button button-primary" disabled={loading || !form.description.trim()} type="submit">
-              {loading ? "Submitting..." : "Start AI triage"}
+          <div className="tenant-actions">
+            <button className="landing-primary" disabled={loading || !form.description.trim()} type="submit">
+              {loading ? "Sending to AI..." : "Send to AI"}
             </button>
-            <Link className="button button-secondary" href="/app/dashboard">
-              View live queue
+            <Link className="landing-secondary" href="/app/dashboard">
+              View dashboard
             </Link>
           </div>
         </form>
       </section>
 
-      <section className="surface">
-        <div className="section-copy">
-          <p className="section-tag">AI response</p>
-          <h2>{issue ? "Triage result ready for review" : "Your result will appear here."}</h2>
-          <p>
-            The app always limits DIY guidance to safe actions. Emergency issues bypass troubleshooting and go straight
-            to the manager queue.
-          </p>
+      <section className="assistant-panel">
+        <div className="assistant-header">
+          <p className="intake-label">Step 2</p>
+          <h2>AI handles the next move</h2>
+          <p>The tenant should see a simple answer, not the full back-office workflow.</p>
         </div>
 
         {issue ? (
-          <div className="result-stack">
-            <div className="pill-row">
+          <div className="assistant-result">
+            <div className="assistant-pills">
               <span className={`status-pill is-${issue.urgencyLevel}`}>{issue.urgencyLevel}</span>
               <span className={`status-pill is-${issue.status}`}>{issue.status}</span>
             </div>
 
-            <div className="result-block">
-              <h3>Safety instructions</h3>
-              <ul className="detail-list">
+            <div className="assistant-block">
+              <h3>What the tenant sees</h3>
+              <ul className="assistant-list">
                 {issue.aiTriage.safetyInstructions.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
 
-            <div className="result-block">
+            <div className="assistant-block">
               <h3>AI follow-up</h3>
-              <div className="message-stack">
-                <div className="message-bubble tenant">{issue.description}</div>
+              <div className="assistant-chat">
+                <div className="assistant-bubble tenant">{issue.description}</div>
                 {issue.aiTriage.followUpQuestions.map((item) => (
-                  <div className="message-bubble assistant" key={item}>
+                  <div className="assistant-bubble ai" key={item}>
                     {item}
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="result-block">
-              <h3>DIY steps</h3>
-              {issue.aiTriage.diySteps.length ? (
-                <ul className="detail-list">
-                  {issue.aiTriage.diySteps.map((step) => (
-                    <li key={step.id}>
-                      <strong>{step.title}:</strong> {step.detail}
-                    </li>
-                  ))}
-                </ul>
+            <div className="assistant-block">
+              <h3>Behind the scenes</h3>
+              <p>{issue.aiTriage.managerSummary}</p>
+              {issue.vendorRecommendations.length ? (
+                <p>
+                  If the tenant cannot fix it, the app proposes{" "}
+                  <strong>{issue.vendorRecommendations[0]?.proposedWindow}</strong> and sends the request to manager
+                  approval.
+                </p>
               ) : (
-                <p>No DIY steps were offered because the issue needs manager review immediately.</p>
+                <p>The issue appears resolved without creating a work order.</p>
               )}
             </div>
 
-            {issue.vendorRecommendations.length ? (
-              <div className="result-block">
-                <h3>Prepared for manager approval</h3>
-                <p>{issue.aiTriage.managerSummary}</p>
-                <p>
-                  Proposed vendor: <strong>{issue.vendorRecommendations[0]?.vendorId}</strong> with a suggested window
-                  of <strong>{issue.vendorRecommendations[0]?.proposedWindow}</strong>.
-                </p>
-              </div>
-            ) : (
-              <div className="result-block">
-                <h3>Resolution status</h3>
-                <p>The issue appears resolved through safe self-service and no vendor dispatch is queued.</p>
-              </div>
-            )}
-
-            <div className="action-row">
-              <Link className="button button-primary" href={`/app/issues/${issue.id}`}>
-                Open tenant issue status
+            <div className="tenant-actions">
+              <Link className="landing-primary" href={`/app/issues/${issue.id}`}>
+                Open tenant status
               </Link>
               {issue.vendorRecommendations.length ? (
-                <Link className="button button-secondary" href={`/app/manager/issues/${issue.id}`}>
+                <Link className="landing-secondary" href={`/app/manager/issues/${issue.id}`}>
                   Open manager review
                 </Link>
               ) : null}
             </div>
           </div>
         ) : (
-          <div className="placeholder-card">
-            <p>Try a sample routine request like a dishwasher drain issue or a priority request like no hot water.</p>
+          <div className="assistant-placeholder">
+            <div className="assistant-bubble ai">
+              Upload the photo and a short note first. The AI will decide whether to offer a safe fix or escalate it.
+            </div>
+            <div className="assistant-mini-card">
+              <strong>To make this app more applicable:</strong>
+              <ul className="assistant-list">
+                <li>Tenant login must auto-attach the right property and unit.</li>
+                <li>The camera has to feel like the main action, not a hidden field.</li>
+                <li>AI should summarize the problem in plain language immediately.</li>
+              </ul>
+            </div>
           </div>
         )}
       </section>
