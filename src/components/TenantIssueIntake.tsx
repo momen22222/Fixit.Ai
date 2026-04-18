@@ -47,10 +47,10 @@ export function TenantIssueIntake() {
 
     setPreflight(
       urgency === "emergency"
-        ? "This looks urgent. The app will skip DIY help, show safety instructions, and alert the manager."
+        ? "This looks urgent. AI will skip troubleshooting and notify the manager right away."
         : urgency === "priority"
-          ? "This may need fast review. AI will check for safe first steps, then prepare a manager summary."
-          : "The AI can likely start with a few safe checks before anyone is scheduled."
+          ? "This may need quick attention. AI will check safe next steps and prepare the handoff."
+          : "AI can start with safe first checks before anyone gets scheduled."
     );
   }
 
@@ -81,21 +81,13 @@ export function TenantIssueIntake() {
   }
 
   return (
-    <div className="tenant-intake-shell">
-      <section className="intake-panel">
-        <div className="intake-header">
-          <div>
-            <p className="intake-label">Step 1</p>
-            <h2>Start with the photo</h2>
-          </div>
-          <p className="intake-help">Tenants should be able to finish this in under a minute.</p>
-        </div>
-
-        <form className="tenant-form" onSubmit={handleSubmit}>
-          <div className="camera-dropzone">
-            <div className="camera-icon" />
-            <strong>Add a photo or open the camera</strong>
-            <p>Show the broken appliance, leak, damage, or display panel.</p>
+    <div className="tenant-flow-layout">
+      <section className="tenant-capture-card">
+        <form className="tenant-capture-form" onSubmit={handleSubmit}>
+          <label className="tenant-camera-card">
+            <div className="tenant-camera-icon" />
+            <strong>Tap to add a photo</strong>
+            <p>The photo should be the main thing the tenant notices first.</p>
             <input
               accept="image/*"
               capture="environment"
@@ -109,11 +101,11 @@ export function TenantIssueIntake() {
                 });
               }}
             />
-            <span>{form.photos.length ? `${form.photos.length} photo(s) selected` : "No photo selected yet"}</span>
-          </div>
+            <span>{form.photos.length ? `${form.photos.length} photo(s) selected` : "No photo added yet"}</span>
+          </label>
 
-          <label className="tenant-field tenant-field-wide">
-            <span>What do you need help with?</span>
+          <label className="tenant-input-block">
+            <span>What is going on?</span>
             <textarea
               rows={4}
               value={form.description}
@@ -128,28 +120,28 @@ export function TenantIssueIntake() {
             />
           </label>
 
-          <div className="tenant-grid">
-            <label className="tenant-field">
-              <span>Issue type</span>
-              <select
-                value={form.category}
-                onChange={async (event) => {
-                  const nextForm = { ...form, category: event.target.value };
-                  setForm(nextForm);
-                  if (nextForm.description.trim()) {
-                    await runPreflight(nextForm);
-                  }
-                }}
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <label className="tenant-input-block">
+            <span>Issue type</span>
+            <select
+              value={form.category}
+              onChange={async (event) => {
+                const nextForm = { ...form, category: event.target.value };
+                setForm(nextForm);
+                if (nextForm.description.trim()) {
+                  await runPreflight(nextForm);
+                }
+              }}
+            >
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </label>
 
-            <label className="tenant-field">
+          <div className="tenant-mini-grid">
+            <label className="tenant-input-block">
               <span>Unit</span>
               <select
                 value={form.unitId}
@@ -159,16 +151,14 @@ export function TenantIssueIntake() {
               >
                 {units.map((unit) => (
                   <option key={unit.id} value={unit.id}>
-                    {unit.label} - Maple Court Homes
+                    {unit.label}
                   </option>
                 ))}
               </select>
             </label>
-          </div>
 
-          <div className="tenant-grid">
-            <label className="tenant-field">
-              <span>When can someone come by?</span>
+            <label className="tenant-input-block">
+              <span>Availability</span>
               <select
                 value={form.tenantAvailability}
                 onChange={(event) => {
@@ -182,52 +172,59 @@ export function TenantIssueIntake() {
                 ))}
               </select>
             </label>
-
-            <label className="tenant-toggle">
-              <input
-                checked={form.permissionToEnter}
-                type="checkbox"
-                onChange={(event) => {
-                  setForm({ ...form, permissionToEnter: event.target.checked });
-                }}
-              />
-              <div>
-                <strong>Permission to enter</strong>
-                <p>Allow management or a vendor to enter if you are away.</p>
-              </div>
-            </label>
           </div>
 
-          {preflight ? <p className="preflight-banner">{preflight}</p> : null}
+          <label className="tenant-check-row">
+            <input
+              checked={form.permissionToEnter}
+              type="checkbox"
+              onChange={(event) => {
+                setForm({ ...form, permissionToEnter: event.target.checked });
+              }}
+            />
+            <span>Allow management or a vendor to enter if I am away.</span>
+          </label>
+
+          {preflight ? <p className="tenant-preflight">{preflight}</p> : null}
           {error ? <p className="error-note">{error}</p> : null}
 
-          <div className="tenant-actions">
-            <button className="landing-primary" disabled={loading || !form.description.trim()} type="submit">
-              {loading ? "Sending to AI..." : "Send to AI"}
+          <div className="tenant-submit-row">
+            <button className="mobile-primary-action" disabled={loading || !form.description.trim()} type="submit">
+              {loading ? "Sending..." : "Send to AI"}
             </button>
-            <Link className="landing-secondary" href="/app/dashboard">
-              View dashboard
-            </Link>
           </div>
         </form>
       </section>
 
-      <section className="assistant-panel">
-        <div className="assistant-header">
-          <p className="intake-label">Step 2</p>
-          <h2>AI handles the next move</h2>
-          <p>The tenant should see a simple answer, not the full back-office workflow.</p>
+      <section className="tenant-ai-card">
+        <div className="tenant-ai-header">
+          <p className="mobile-label">AI update</p>
+          <h2>{issue ? "Here is what happens next" : "After you send it"}</h2>
         </div>
 
         {issue ? (
-          <div className="assistant-result">
+          <div className="tenant-ai-result">
             <div className="assistant-pills">
               <span className={`status-pill is-${issue.urgencyLevel}`}>{issue.urgencyLevel}</span>
               <span className={`status-pill is-${issue.status}`}>{issue.status}</span>
             </div>
 
-            <div className="assistant-block">
-              <h3>What the tenant sees</h3>
+            <div className="tenant-ai-message">
+              <strong>AI summary</strong>
+              <p>{issue.aiTriage.managerSummary}</p>
+            </div>
+
+            <div className="tenant-ai-message">
+              <strong>Next prompt</strong>
+              {issue.aiTriage.followUpQuestions.length ? (
+                <p>{issue.aiTriage.followUpQuestions[0]}</p>
+              ) : (
+                <p>The issue was escalated immediately because it may be urgent.</p>
+              )}
+            </div>
+
+            <div className="tenant-ai-message">
+              <strong>What the tenant needs to know</strong>
               <ul className="assistant-list">
                 {issue.aiTriage.safetyInstructions.map((item) => (
                   <li key={item}>{item}</li>
@@ -235,55 +232,23 @@ export function TenantIssueIntake() {
               </ul>
             </div>
 
-            <div className="assistant-block">
-              <h3>AI follow-up</h3>
-              <div className="assistant-chat">
-                <div className="assistant-bubble tenant">{issue.description}</div>
-                {issue.aiTriage.followUpQuestions.map((item) => (
-                  <div className="assistant-bubble ai" key={item}>
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="assistant-block">
-              <h3>Behind the scenes</h3>
-              <p>{issue.aiTriage.managerSummary}</p>
-              {issue.vendorRecommendations.length ? (
-                <p>
-                  If the tenant cannot fix it, the app proposes{" "}
-                  <strong>{issue.vendorRecommendations[0]?.proposedWindow}</strong> and sends the request to manager
-                  approval.
-                </p>
-              ) : (
-                <p>The issue appears resolved without creating a work order.</p>
-              )}
-            </div>
-
-            <div className="tenant-actions">
-              <Link className="landing-primary" href={`/app/issues/${issue.id}`}>
-                Open tenant status
+            <div className="tenant-submit-row">
+              <Link className="mobile-primary-action" href={`/app/issues/${issue.id}`}>
+                View request status
               </Link>
-              {issue.vendorRecommendations.length ? (
-                <Link className="landing-secondary" href={`/app/manager/issues/${issue.id}`}>
-                  Open manager review
-                </Link>
-              ) : null}
             </div>
           </div>
         ) : (
-          <div className="assistant-placeholder">
-            <div className="assistant-bubble ai">
-              Upload the photo and a short note first. The AI will decide whether to offer a safe fix or escalate it.
+          <div className="tenant-ai-placeholder">
+            <div className="tenant-ai-message">
+              <strong>Simple tenant experience</strong>
+              <p>Take a picture, type one sentence, then wait for AI to guide you.</p>
             </div>
-            <div className="assistant-mini-card">
-              <strong>To make this app more applicable:</strong>
-              <ul className="assistant-list">
-                <li>Tenant login must auto-attach the right property and unit.</li>
-                <li>The camera has to feel like the main action, not a hidden field.</li>
-                <li>AI should summarize the problem in plain language immediately.</li>
-              </ul>
+            <div className="tenant-ai-message">
+              <strong>Behind the scenes</strong>
+              <p>
+                The app checks urgency, offers safe help when appropriate, and prepares the manager handoff if needed.
+              </p>
             </div>
           </div>
         )}

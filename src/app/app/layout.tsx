@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const navItems = [
-  { href: "/app/issues/new", label: "New request" },
-  { href: "/app/dashboard", label: "Status" },
-  { href: "/app/manager/approvals", label: "Manager" },
-  { href: "/app/manager/vendors", label: "Vendors" }
+  { href: "/app/dashboard", label: "Home" },
+  { href: "/app/issues/new", label: "Request" },
+  { href: "/app/issues/issue-1001", label: "Status" },
+  { href: "/app/manager/approvals", label: "Manager" }
 ];
 
 export default function AppLayout({
@@ -13,31 +13,25 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <Link className="brand-lockup" href="/">
-          <span className="brand-mark">Fix it AI</span>
-          <span className="brand-subtitle">Tenant-first maintenance assistant</span>
-        </Link>
+    <div className="tenant-app-shell">
+      <header className="tenant-topbar">
+        <div className="tenant-topbar-copy">
+          <Link className="brand-lockup" href="/">
+            <span className="brand-mark">Fix it AI</span>
+            <span className="brand-subtitle">Simple tenant maintenance</span>
+          </Link>
+        </div>
 
-        <nav className="desktop-nav" aria-label="Primary">
-          {navItems.map((item) => (
-            <Link className="nav-link" href={item.href} key={item.href}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <Link className="header-cta" href="/app/issues/new">
-          Report issue
+        <Link className="tenant-profile-chip" href="/app/dashboard">
+          Unit 3C
         </Link>
       </header>
 
-      <main className="app-content">{children}</main>
+      <main className="tenant-app-content">{children}</main>
 
-      <nav className="mobile-nav" aria-label="Mobile navigation">
+      <nav className="tenant-bottom-nav" aria-label="Tenant navigation">
         {navItems.map((item) => (
-          <Link className="mobile-nav-link" href={item.href} key={item.href}>
+          <Link className="tenant-nav-item" href={item.href} key={item.href}>
             {item.label}
           </Link>
         ))}
