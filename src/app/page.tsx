@@ -1,152 +1,133 @@
 import Link from "next/link";
+import { listIssues, listVendors, notificationStore, properties } from "@/lib/maintenance-data";
 
-const stageCards = [
+const workflowSteps = [
   {
-    eyebrow: "Nutrition",
-    title: "Meals tuned to energy, cravings, and recovery",
-    text: "Daily plans balance protein, hydration, iron support, and realistic meal timing for busy lives."
+    tag: "1. Tenant intake",
+    title: "Photo-first issue capture on a phone",
+    text: "Tenants submit a maintenance problem with photos, a plain-language description, availability, and permission-to-enter details."
   },
   {
-    eyebrow: "Movement",
-    title: "Workouts that meet women where they are",
-    text: "Low-impact recovery, strength blocks, walks, and cycle-aware training all live in one calm system."
+    tag: "2. AI triage",
+    title: "Safe self-service before a truck roll",
+    text: "The app classifies urgency, blocks dangerous repair advice, and offers only low-risk checks using simple tools."
   },
   {
-    eyebrow: "Life stages",
-    title: "Support from puberty to postpartum and beyond",
-    text: "Guidance changes as bodies change, so the app never treats women's health like a generic fitness plan."
+    tag: "3. Manager review",
+    title: "Reliable vendor recommendation before booking",
+    text: "If the issue is not resolved, the system prepares a manager summary, ranks approved vendors by reliability first, then price, and proposes the best slot."
   }
 ];
 
-const dailyPlan = [
-  "Breakfast with protein, fiber, and hydration before caffeine",
-  "Short recovery-strength session tailored to current energy",
-  "Mood, symptom, and cycle-aware nutrition suggestions",
-  "An AI coach that rewrites the plan when life gets messy"
-];
-
-const journeys = [
-  "Puberty and body literacy",
-  "Cycle support and hormone-aware routines",
-  "Fertility and preconception wellness",
-  "Pregnancy nourishment and movement",
-  "Postpartum recovery and rebuilding strength",
-  "Perimenopause and midlife metabolism support"
-];
-
 export default function Home() {
+  const issues = listIssues();
+  const pendingApprovals = issues.filter((issue) => issue.status === "approval-needed").length;
+  const scheduled = issues.filter((issue) => issue.status === "scheduled").length;
+  const urgent = issues.filter((issue) => issue.urgencyLevel === "emergency" || issue.urgencyLevel === "priority").length;
+  const property = properties[0];
+
   return (
-    <main className="app-shell">
-      <section className="hero">
+    <main className="marketing-shell">
+      <section className="hero-panel-large">
         <div className="hero-copy">
-          <p className="eyebrow">HerHealth AI</p>
-          <h1>{"Women's health, personalized by life stage, energy, and real life."}</h1>
+          <p className="eyebrow">FieldFix PM</p>
+          <h1>Maintenance triage, vendor dispatch, and manager approval in one mobile-first workflow.</h1>
           <p className="lede">
-            A mobile-first wellness app for nutrition, workouts, recovery, and education across puberty, fertility,
-            pregnancy, postpartum, and midlife.
+            Built for property managers who want faster issue resolution, safer tenant guidance, and cleaner handoff to
+            approved subcontractors.
           </p>
-          <div className="hero-actions">
-            <Link className="primary-action" href="/onboarding">
-              Start onboarding
+          <div className="action-row">
+            <Link className="button button-primary" href="/app/issues/new">
+              Report a maintenance issue
             </Link>
-            <a className="secondary-action" href="#journeys">
-              See life-stage support
-            </a>
+            <Link className="button button-secondary" href="/app/manager/approvals">
+              Open manager approvals
+            </Link>
           </div>
-          <div className="hero-metrics">
-            <div>
-              <strong>6</strong>
-              <span>life-stage journeys</span>
+          <div className="metric-grid">
+            <div className="metric-card">
+              <strong>{pendingApprovals}</strong>
+              <span>approval-ready issues</span>
             </div>
-            <div>
-              <strong>1</strong>
-              <span>adaptive AI coach</span>
+            <div className="metric-card">
+              <strong>{scheduled}</strong>
+              <span>scheduled work orders</span>
             </div>
-            <div>
-              <strong>Daily</strong>
-              <span>food + movement planning</span>
+            <div className="metric-card">
+              <strong>{urgent}</strong>
+              <span>priority or urgent cases</span>
             </div>
           </div>
         </div>
 
-        <div className="hero-panel" id="dashboard">
-          <div className="plan-topline">
-            <span>Today for Paige</span>
-            <span>Postpartum recovery</span>
-          </div>
-
-          <div className="plan-headline">
-            <h2>Gentle structure for a low-sleep day</h2>
+        <div className="hero-stack">
+          <article className="surface surface-strong">
+            <p className="section-tag">Live property snapshot</p>
+            <h2>{property.name}</h2>
             <p>
-              The AI coach shifts your plan toward protein-forward meals, a short walk, core recovery, and lower
-              decision fatigue.
+              {property.address}, {property.city}, {property.state} {property.postalCode}
             </p>
-          </div>
+            <div className="detail-list-block">
+              <p>Approved vendors: {listVendors().length}</p>
+              <p>Unread notifications: {notificationStore.length}</p>
+              <p>Human approval required before any vendor booking</p>
+            </div>
+          </article>
 
-          <div className="plan-grid">
-            {dailyPlan.map((item) => (
-              <div className="plan-row" key={item}>
-                <span className="plan-dot" />
-                <p>{item}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="panel-actions">
-            <Link className="text-link" href="/app/dashboard">
-              View dashboard
-            </Link>
-            <Link className="text-link" href="/app/coach">
-              Open AI coach
-            </Link>
-          </div>
+          <article className="surface alert-surface">
+            <p className="section-tag">Why teams use it</p>
+            <h2>Lower-cost dispatch with safer tenant guidance.</h2>
+            <p>
+              The AI only suggests simple, low-risk checks. Unsafe cases bypass self-help and go directly to the
+              manager queue with a summary and ranked vendor options.
+            </p>
+          </article>
         </div>
       </section>
 
-      <section className="feature-band">
-        {stageCards.map((card) => (
-          <article className="feature-column" key={card.title}>
-            <p className="feature-eyebrow">{card.eyebrow}</p>
-            <h3>{card.title}</h3>
-            <p>{card.text}</p>
+      <section className="triple-grid">
+        {workflowSteps.map((step) => (
+          <article className="surface" key={step.title}>
+            <p className="section-tag">{step.tag}</p>
+            <h2>{step.title}</h2>
+            <p>{step.text}</p>
           </article>
         ))}
       </section>
 
-      <section className="journeys" id="journeys">
-        <div className="section-heading">
-          <p className="eyebrow">Life-stage journeys</p>
-          <h2>The app grows with women instead of asking them to adapt to generic wellness advice.</h2>
-        </div>
-
-        <div className="journey-list">
-          {journeys.map((journey) => (
-            <div className="journey-item" key={journey}>
-              <span />
-              <p>{journey}</p>
+      <section className="two-column-band">
+        <article className="surface">
+          <div className="section-copy">
+            <p className="section-tag">Tenant path</p>
+            <h2>From photo upload to issue status.</h2>
+            <p>
+              Invite-only tenant access keeps every issue tied to the correct property and unit while still feeling
+              lightweight on a phone.
+            </p>
+          </div>
+          <div className="message-stack">
+            <div className="message-bubble tenant">The dishwasher is still full of water after the cycle.</div>
+            <div className="message-bubble assistant">
+              I will walk you through a safe reset, then prepare a manager-ready summary if it still needs a vendor.
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </article>
 
-      <section className="coach-section">
-        <div className="section-heading">
-          <p className="eyebrow">AI Coach</p>
-          <h2>Personalization that feels practical, not robotic.</h2>
-        </div>
-
-        <div className="chat-shell">
-          <div className="chat-bubble assistant">
-            I noticed sleep was lower than usual and recovery is a priority. Want me to simplify meals and shorten the
-            workout for today?
+        <article className="surface">
+          <div className="section-copy">
+            <p className="section-tag">Manager path</p>
+            <h2>AI summary, cheapest qualified vendor, final human sign-off.</h2>
+            <p>
+              Approval screens show the issue, photo evidence, tenant availability, ranked vendors, and the proposed
+              appointment window before anything gets booked.
+            </p>
           </div>
-          <div className="chat-bubble user">
-            Yes, and keep it realistic. I only have short windows between everything else.
+          <div className="detail-list-block">
+            <p>Reliability-first ranking across approved vendors</p>
+            <p>Manager can approve, reject, or modify the appointment</p>
+            <p>Tenant, vendor, and manager all receive in-app plus SMS or email updates</p>
           </div>
-          <div className="chat-bubble assistant">
-            Done. I shifted today to three easy protein-forward meals, one stroller walk, and a 12-minute core reset.
-          </div>
-        </div>
+        </article>
       </section>
     </main>
   );

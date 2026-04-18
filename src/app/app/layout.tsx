@@ -2,9 +2,9 @@ import Link from "next/link";
 
 const navItems = [
   { href: "/app/dashboard", label: "Dashboard" },
-  { href: "/app/nutrition", label: "Nutrition" },
-  { href: "/app/workouts", label: "Workouts" },
-  { href: "/app/coach", label: "AI Coach" }
+  { href: "/app/issues/new", label: "Report issue" },
+  { href: "/app/manager/approvals", label: "Approvals" },
+  { href: "/app/manager/vendors", label: "Vendors" }
 ];
 
 export default function AppLayout({
@@ -13,11 +13,11 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="product-shell">
-      <header className="product-header">
+    <div className="app-shell">
+      <header className="topbar">
         <Link className="brand-lockup" href="/">
-          <span className="brand-mark">HerHealth AI</span>
-          <span className="brand-subtitle">Women&apos;s health companion</span>
+          <span className="brand-mark">FieldFix PM</span>
+          <span className="brand-subtitle">AI triage for property operations</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary">
@@ -28,14 +28,14 @@ export default function AppLayout({
           ))}
         </nav>
 
-        <Link className="header-cta" href="/onboarding">
-          Edit profile
+        <Link className="button button-secondary" href="/onboarding">
+          Invite flow
         </Link>
       </header>
 
-      <main className="product-content">{children}</main>
+      <main className="app-content">{children}</main>
 
-      <nav className="mobile-nav" aria-label="Mobile">
+      <nav className="mobile-nav" aria-label="Mobile navigation">
         {navItems.map((item) => (
           <Link className="mobile-nav-link" href={item.href} key={item.href}>
             {item.label}

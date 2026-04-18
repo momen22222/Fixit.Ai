@@ -1,175 +1,125 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-type StepKey = "lifeStage" | "goal" | "energy" | "coachStyle";
-
-type StepDefinition = {
-  key: StepKey;
-  step: string;
-  title: string;
-  detail: string;
-  options: string[];
-};
-
-const steps: StepDefinition[] = [
+const steps = [
   {
-    key: "lifeStage",
-    step: "01",
-    title: "What life stage best fits right now?",
-    detail: "This changes what support matters most, from puberty to postpartum to perimenopause.",
-    options: ["Puberty", "Cycle support", "Fertility", "Pregnancy", "Postpartum", "Perimenopause"]
+    id: "role",
+    title: "Who are we inviting into the workflow?",
+    detail: "Version 1 uses manager-created access so every tenant is tied to a known property and unit.",
+    options: ["Tenant user", "Property manager", "Vendor coordinator"]
   },
   {
-    key: "goal",
-    step: "02",
-    title: "What do you want help with first?",
-    detail: "We’ll prioritize the first outcome so the app feels useful right away.",
-    options: ["More energy", "Balanced meals", "Strength training", "Hormone support", "Recovery", "Better sleep"]
+    id: "property",
+    title: "What property should this access belong to?",
+    detail: "Keep access scoped to one property at launch to reduce cross-property mistakes.",
+    options: ["Maple Court Homes", "Add another property later"]
   },
   {
-    key: "energy",
-    step: "03",
-    title: "How much time do you have for movement most days?",
-    detail: "Short windows are normal. We’ll build around what’s realistic.",
-    options: ["10 minutes", "20 minutes", "30 minutes", "45+ minutes"]
-  },
-  {
-    key: "coachStyle",
-    step: "04",
-    title: "How do you want the AI coach to show up?",
-    detail: "Pick the tone that feels motivating instead of overwhelming.",
-    options: ["Gentle nudges", "Practical planner", "Data-aware coach", "Deep education"]
+    id: "comms",
+    title: "How should updates reach them?",
+    detail: "In-app is the source of truth, but SMS or email improves response rates for approvals and appointments.",
+    options: ["In-app + SMS/email", "In-app only"]
   }
 ];
 
-type Answers = Partial<Record<StepKey, string>>;
-
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({
-    lifeStage: "Postpartum",
-    goal: "Recovery"
+  const [answers, setAnswers] = useState<Record<string, string>>({
+    role: "Tenant user",
+    property: "Maple Court Homes",
+    comms: "In-app + SMS/email"
   });
 
   const step = steps[currentStep];
-  const selectedAnswer = answers[step.key];
   const progress = ((currentStep + 1) / steps.length) * 100;
   const isLastStep = currentStep === steps.length - 1;
 
-  const summary = useMemo(
-    () => [
-      { label: "Life stage", value: answers.lifeStage ?? "Choose one" },
-      { label: "Primary goal", value: answers.goal ?? "Choose one" },
-      { label: "Movement time", value: answers.energy ?? "Choose one" },
-      { label: "Coach style", value: answers.coachStyle ?? "Choose one" }
-    ],
-    [answers]
-  );
-
-  const selectOption = (option: string) => {
-    setAnswers((current) => ({
-      ...current,
-      [step.key]: option
-    }));
-  };
-
-  const goNext = () => {
-    if (!selectedAnswer) {
-      return;
-    }
-
-    setCurrentStep((index) => Math.min(index + 1, steps.length - 1));
-  };
-
-  const goBack = () => {
-    setCurrentStep((index) => Math.max(index - 1, 0));
-  };
-
   return (
-    <main className="flow-page">
-      <section className="flow-hero">
-        <div className="flow-copy">
-          <p className="eyebrow">Onboarding</p>
-          <h1>Build a plan that feels like it was made for one woman, not every woman.</h1>
+    <main className="flow-shell">
+      <section className="hero-panel-large">
+        <div className="hero-copy">
+          <p className="eyebrow">Invite-first onboarding</p>
+          <h1>Bring tenants and managers into the right property context before the first maintenance request.</h1>
           <p className="lede">
-            This flow now acts like a real first session: you choose your stage, your top goal, your available time,
-            and the kind of support you want from the app.
+            This setup flow keeps units, communication preferences, and approval responsibilities clear before the app
+            starts dispatching work.
           </p>
-          <div className="hero-actions">
-            <button className="primary-action" onClick={goNext} type="button">
-              {isLastStep ? "Review plan" : "Continue"}
+          <div className="action-row">
+            <button
+              className="button button-primary"
+              onClick={() => setCurrentStep((index) => Math.min(index + 1, steps.length - 1))}
+              type="button"
+            >
+              {isLastStep ? "Review invite setup" : "Continue"}
             </button>
-            <Link className="secondary-action" href="/">
-              Back to home
+            <Link className="button button-secondary" href="/">
+              Back to overview
             </Link>
           </div>
         </div>
 
-        <div className="onboarding-panel">
-          <div className="mock-form-header">
+        <section className="surface surface-strong">
+          <div className="panel-head">
             <span>
-              Step {step.step} of {steps.length}
+              Step {currentStep + 1} of {steps.length}
             </span>
             <span>{Math.round(progress)}% complete</span>
           </div>
-
-          <div className="progress-track" aria-hidden="true">
+          <div className="progress-track">
             <div className="progress-fill" style={{ width: `${progress}%` }} />
           </div>
-
-          <div className="input-stack">
-            <div className="input-group">
-              <label>{step.title}</label>
-              <p className="input-help">{step.detail}</p>
-              <div className="chip-grid">
-                {step.options.map((option) => (
-                  <button
-                    className={selectedAnswer === option ? "chip active" : "chip"}
-                    key={option}
-                    onClick={() => selectOption(option)}
-                    type="button"
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="section-copy">
+            <h2>{step.title}</h2>
+            <p>{step.detail}</p>
           </div>
-
-          <div className="onboarding-actions">
-            <button className="secondary-action" disabled={currentStep === 0} onClick={goBack} type="button">
+          <div className="chip-row">
+            {step.options.map((option) => (
+              <button
+                className={answers[step.id] === option ? "chip is-active" : "chip"}
+                key={option}
+                onClick={() => setAnswers((current) => ({ ...current, [step.id]: option }))}
+                type="button"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <div className="action-row">
+            <button
+              className="button button-secondary"
+              disabled={currentStep === 0}
+              onClick={() => setCurrentStep((index) => Math.max(index - 1, 0))}
+              type="button"
+            >
               Back
             </button>
             {isLastStep ? (
-              <Link className={`primary-action ${selectedAnswer ? "" : "is-disabled"}`} href="/app/dashboard">
-                Finish and view dashboard
+              <Link className="button button-primary" href="/app/dashboard">
+                Finish setup
               </Link>
             ) : (
-              <button className="primary-action" disabled={!selectedAnswer} onClick={goNext} type="button">
-                Next question
+              <button
+                className="button button-primary"
+                onClick={() => setCurrentStep((index) => Math.min(index + 1, steps.length - 1))}
+                type="button"
+              >
+                Next
               </button>
             )}
           </div>
-        </div>
+        </section>
       </section>
 
-      <section className="step-section">
-        <div className="section-heading">
-          <p className="eyebrow">Your intake summary</p>
-          <h2>Personalization should feel earned, visible, and easy to change later.</h2>
-        </div>
-
-        <div className="step-list">
-          {summary.map((item, index) => (
-            <article className="step-card" key={item.label}>
-              <span>{`0${index + 1}`}</span>
-              <h3>{item.label}</h3>
-              <p>{item.value}</p>
-            </article>
-          ))}
-        </div>
+      <section className="triple-grid">
+        {steps.map((item) => (
+          <article className="surface" key={item.id}>
+            <p className="section-tag">{item.title}</p>
+            <h2>{answers[item.id]}</h2>
+            <p>{item.detail}</p>
+          </article>
+        ))}
       </section>
     </main>
   );

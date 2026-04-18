@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HerHealth AI",
+  title: "FieldFix PM",
   description:
-    "A mobile-first women's health app focused on food, movement, life stages, and AI personalization."
+    "Mobile-first property maintenance triage, manager approvals, and vendor scheduling for property management teams."
 };
 
 export default function RootLayout({
