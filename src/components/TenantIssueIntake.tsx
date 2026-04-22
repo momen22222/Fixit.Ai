@@ -278,7 +278,7 @@ export function TenantIssueIntake({ defaultUnitId, propertyName, unitLabel }: Te
             </div>
 
             <div className="tenant-submit-row">
-              <Link className="mobile-primary-action" href={`/app/issues/${issue.id}`}>
+              <Link className="mobile-primary-action" href={`/tenant/issues/${issue.id}`}>
                 View request status
               </Link>
             </div>

@@ -1156,7 +1156,7 @@ textarea {
   bottom: 0.9rem;
   left: 0.9rem;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.45rem;
   padding: 0.45rem;
   border-radius: 1.2rem;
@@ -1276,5 +1276,371 @@ textarea {
     left: 50%;
     max-width: 28rem;
     transform: translateX(-50%);
+  }
+}
+
+.tenant-role-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  padding: 0.9rem 0.9rem 6.25rem;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(46, 111, 154, 0.12), transparent 26rem),
+    linear-gradient(180deg, #f8fbfd 0%, #edf4f9 100%);
+}
+
+.tenant-role-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tenant-role-content {
+  width: min(100%, 32rem);
+  justify-self: center;
+}
+
+.tenant-home-screen,
+.tenant-list-screen,
+.tenant-detail-screen {
+  display: grid;
+  gap: 1rem;
+}
+
+.tenant-hero-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.8rem;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.94), rgba(227, 238, 247, 0.78)),
+    #fff;
+  box-shadow: 0 22px 48px rgba(16, 36, 58, 0.08);
+}
+
+.tenant-hero-card h1,
+.tenant-detail-hero h1,
+.manager-hero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+}
+
+.tenant-hero-card h1,
+.tenant-detail-hero h1 {
+  font-size: clamp(2.5rem, 12vw, 4.4rem);
+}
+
+.tenant-hero-card p,
+.tenant-detail-hero p,
+.tenant-issue-row p,
+.manager-hero p,
+.manager-panel p,
+.manager-request-row p,
+.manager-vendor-card p,
+.manager-metric-card p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.tenant-primary-camera {
+  min-height: 4.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1.35rem;
+  background: var(--color-forest);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.tenant-primary-camera-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.9rem;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.82), transparent 22%),
+    linear-gradient(180deg, #8fc5e8, #2e6f9a);
+}
+
+.tenant-quick-grid,
+.manager-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.tenant-mini-stat {
+  padding: 1rem;
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.tenant-mini-stat span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-forest);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.tenant-mini-stat p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.tenant-request-list,
+.tenant-progress-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.tenant-issue-row {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.tenant-issue-row h2,
+.tenant-status-card h2,
+.tenant-activity-card h2,
+.manager-panel h2,
+.manager-request-row h2,
+.manager-vendor-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.tenant-detail-hero {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.tenant-progress-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tenant-progress-step span {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(18, 57, 91, 0.1);
+  color: var(--color-forest);
+  font-weight: 800;
+}
+
+.manager-shell {
+  min-height: 100vh;
+  display: grid;
+  background:
+    radial-gradient(circle at top right, rgba(46, 111, 154, 0.12), transparent 24rem),
+    linear-gradient(180deg, #f7fafc 0%, #edf3f7 100%);
+}
+
+.manager-sidebar {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(16, 36, 58, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.manager-nav {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+}
+
+.manager-nav-link {
+  flex: 0 0 auto;
+  padding: 0.75rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(18, 57, 91, 0.07);
+  color: var(--color-forest);
+  font-weight: 800;
+}
+
+.manager-content {
+  width: min(100%, 72rem);
+  padding: 1rem;
+  justify-self: center;
+}
+
+.manager-screen,
+.manager-dashboard-grid,
+.manager-detail-grid,
+.manager-vendor-grid,
+.manager-request-table,
+.manager-panel,
+.manager-hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.manager-hero {
+  align-items: start;
+  padding: 1.1rem;
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.7rem;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 22px 48px rgba(16, 36, 58, 0.06);
+}
+
+.manager-hero h1 {
+  font-size: clamp(2.4rem, 8vw, 5rem);
+}
+
+.manager-metric-card,
+.manager-panel,
+.manager-request-row,
+.manager-vendor-card {
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.35rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 16px 34px rgba(16, 36, 58, 0.05);
+}
+
+.manager-metric-card {
+  padding: 1rem;
+}
+
+.manager-metric-card span {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--color-forest);
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.manager-panel,
+.manager-request-row,
+.manager-vendor-card {
+  padding: 1rem;
+}
+
+.manager-panel-strong {
+  background: linear-gradient(150deg, rgba(227, 238, 247, 0.9), rgba(255, 255, 255, 0.94));
+}
+
+.manager-request-row {
+  display: grid;
+  gap: 1rem;
+}
+
+.manager-row-status,
+.manager-vendor-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.manager-vendor-facts span {
+  display: inline-flex;
+  padding: 0.55rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(18, 57, 91, 0.07);
+  color: var(--color-forest);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field span {
+  font-weight: 800;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid rgba(16, 36, 58, 0.12);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--color-ink);
+}
+
+.field-full {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 880px) {
+  .manager-shell {
+    grid-template-columns: 17rem 1fr;
+  }
+
+  .manager-sidebar {
+    min-height: 100vh;
+    border-right: 1px solid rgba(16, 36, 58, 0.08);
+    border-bottom: 0;
+    position: sticky;
+    top: 0;
+  }
+
+  .manager-nav {
+    display: grid;
+    overflow: visible;
+  }
+
+  .manager-content {
+    padding: 1.5rem;
+  }
+
+  .manager-hero {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .manager-metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .manager-dashboard-grid,
+  .manager-detail-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  }
+
+  .manager-vendor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-request-row {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

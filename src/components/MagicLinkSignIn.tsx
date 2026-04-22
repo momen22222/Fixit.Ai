@@ -63,10 +63,10 @@ export function MagicLinkSignIn() {
       </form>
 
       <div className="tenant-entry-inline-actions">
-        <Link className="mobile-chip-action" href="/app/dashboard">
+        <Link className="mobile-chip-action" href="/tenant/home">
           Continue demo tenant
         </Link>
-        <Link className="mobile-chip-action" href="/app/manager/approvals">
+        <Link className="mobile-chip-action" href="/manager/dashboard">
           Manager inbox
         </Link>
       </div>

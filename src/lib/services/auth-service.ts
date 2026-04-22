@@ -37,7 +37,7 @@ export async function sendMagicLink(input: MagicLinkInput) {
     const { error } = await supabase.auth.signInWithOtp({
       email: input.email,
       options: {
-        emailRedirectTo: "http://localhost:3000/app/dashboard"
+        emailRedirectTo: "http://localhost:3000/tenant/home"
       }
     });
 

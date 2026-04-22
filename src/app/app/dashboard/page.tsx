@@ -17,7 +17,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <Link className="tenant-request-card" href="/app/issues/new">
+      <Link className="tenant-request-card" href="/tenant/new-request">
         <div className="tenant-request-visual">
           <div className="tenant-request-lens" />
         </div>
@@ -40,10 +40,10 @@ export default async function DashboardPage() {
           <>
             <p>{activeIssue.aiTriage.managerSummary}</p>
             <div className="tenant-status-actions">
-              <Link className="landing-primary" href={`/app/issues/${activeIssue.id}`}>
+              <Link className="landing-primary" href={`/tenant/issues/${activeIssue.id}`}>
                 View update
               </Link>
-              <Link className="landing-secondary" href="/app/issues/new">
+              <Link className="landing-secondary" href="/tenant/new-request">
                 Start another
               </Link>
             </div>

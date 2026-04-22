@@ -33,7 +33,7 @@ export default function Home() {
                 <p className="mobile-label">What tenants do</p>
                 <h2>One simple request flow</h2>
               </div>
-              <Link className="mobile-chip-action" href="/app/issues/new">
+              <Link className="mobile-chip-action" href="/tenant/new-request">
                 Preview
               </Link>
             </div>
@@ -72,6 +72,9 @@ export default function Home() {
               Contractors are ranked by approved status, reliability, and cost. The tenant gets updates without calling
               the office for every step.
             </p>
+            <Link className="mobile-chip-action" href="/manager/dashboard">
+              Open manager portal
+            </Link>
           </div>
         </div>
       </section>
