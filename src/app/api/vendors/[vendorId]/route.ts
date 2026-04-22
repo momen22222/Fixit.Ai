@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deleteVendor, getVendorById, updateVendor } from "@/lib/maintenance-data";
+import { getVendorDetail } from "@/lib/services/vendor-service";
 import { type Vendor } from "@/lib/maintenance-types";
 
 export async function GET(
@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ vendorId: string }> }
 ) {
   const { vendorId } = await params;
-  const vendor = getVendorById(vendorId);
+  const vendor = await getVendorDetail(vendorId);
 
   if (!vendor) {
     return NextResponse.json({ error: "Vendor not found." }, { status: 404 });
@@ -20,27 +20,23 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ vendorId: string }> }
 ) {
-  const { vendorId } = await params;
-  const body = (await request.json()) as Partial<Vendor>;
-  const vendor = updateVendor(vendorId, body);
-
-  if (!vendor) {
-    return NextResponse.json({ error: "Vendor not found." }, { status: 404 });
-  }
-
-  return NextResponse.json({ vendor });
+  void request;
+  void params;
+  void ({} as Partial<Vendor>);
+  return NextResponse.json(
+    { error: "Vendor update operations are not wired for the live repository yet." },
+    { status: 501 }
+  );
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ vendorId: string }> }
 ) {
-  const { vendorId } = await params;
-  const deleted = deleteVendor(vendorId);
-
-  if (!deleted) {
-    return NextResponse.json({ error: "Vendor not found." }, { status: 404 });
-  }
-
-  return NextResponse.json({ success: true });
+  void request;
+  void params;
+  return NextResponse.json(
+    { error: "Vendor delete operations are not wired for the live repository yet." },
+    { status: 501 }
+  );
 }

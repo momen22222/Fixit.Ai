@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { approveIssue } from "@/lib/maintenance-data";
+import { approveIssueDecision } from "@/lib/services/approval-service";
 import { type ManagerDecisionInput } from "@/lib/maintenance-types";
 
 export async function POST(request: Request) {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = approveIssue(body);
+    const result = await approveIssueDecision(body);
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to approve issue.";

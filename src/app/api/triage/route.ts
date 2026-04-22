@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { triageMaintenanceIssue } from "@/lib/maintenance-data";
+import { triageIssue } from "@/lib/services/triage-service";
 import { type MaintenanceIssueInput } from "@/lib/maintenance-types";
 
 export async function POST(request: Request) {
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Category and description are required." }, { status: 400 });
   }
 
-  const triage = triageMaintenanceIssue({
+  const result = await triageIssue({
     unitId: body.unitId ?? "unit-3c",
     category: body.category,
     description: body.description,
@@ -18,5 +18,5 @@ export async function POST(request: Request) {
     permissionToEnter: Boolean(body.permissionToEnter)
   });
 
-  return NextResponse.json({ triage });
+  return NextResponse.json(result);
 }

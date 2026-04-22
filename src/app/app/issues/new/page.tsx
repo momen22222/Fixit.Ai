@@ -1,6 +1,9 @@
 import { TenantIssueIntake } from "@/components/TenantIssueIntake";
+import { getTenantAppContext } from "@/lib/services/property-service";
 
-export default function NewIssuePage() {
+export default async function NewIssuePage() {
+  const context = await getTenantAppContext();
+
   return (
     <section className="tenant-flow-screen">
       <div className="tenant-flow-copy">
@@ -9,7 +12,11 @@ export default function NewIssuePage() {
         <p>You should be able to complete this with one hand while standing next to the issue.</p>
       </div>
 
-      <TenantIssueIntake />
+      <TenantIssueIntake
+        defaultUnitId={context.unitId}
+        propertyName={context.propertyName}
+        unitLabel={context.unitLabel}
+      />
     </section>
   );
 }

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { units } from "@/lib/maintenance-data";
 import { type MaintenanceIssue, type MaintenanceIssueInput } from "@/lib/maintenance-types";
 
 const categories = [
@@ -21,9 +20,15 @@ const availabilityOptions = [
   "Any time with notice"
 ];
 
-export function TenantIssueIntake() {
+type TenantIssueIntakeProps = {
+  defaultUnitId: string;
+  propertyName: string;
+  unitLabel: string;
+};
+
+export function TenantIssueIntake({ defaultUnitId, propertyName, unitLabel }: TenantIssueIntakeProps) {
   const [form, setForm] = useState<MaintenanceIssueInput>({
-    unitId: units[1]?.id ?? units[0].id,
+    unitId: defaultUnitId,
     category: categories[0],
     description: "",
     photos: [],
@@ -33,6 +38,7 @@ export function TenantIssueIntake() {
   const [preflight, setPreflight] = useState<string | null>(null);
   const [issue, setIssue] = useState<MaintenanceIssue | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function runPreflight(nextForm: MaintenanceIssueInput) {
@@ -52,6 +58,48 @@ export function TenantIssueIntake() {
           ? "This may need quick attention. AI will check safe next steps and prepare the handoff."
           : "AI can start with safe first checks before anyone gets scheduled."
     );
+  }
+
+  async function handlePhotoSelection(files: File[]) {
+    if (!files.length) {
+      setForm({ ...form, photos: [] });
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const uploadedPaths = await Promise.all(
+        files.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await fetch("/api/uploads/issue-photo", {
+            method: "POST",
+            body: formData
+          });
+
+          const payload = (await response.json()) as {
+            upload?: { path: string };
+            error?: string;
+          };
+
+          if (!response.ok || !payload.upload) {
+            throw new Error(payload.error ?? `Unable to upload ${file.name}.`);
+          }
+
+          return payload.upload.path;
+        })
+      );
+
+      setForm((current) => ({ ...current, photos: uploadedPaths }));
+      setPreflight("Photo attached. Add one sentence and AI will check the safest next step.");
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Unable to upload photos.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -83,11 +131,19 @@ export function TenantIssueIntake() {
   return (
     <div className="tenant-flow-layout">
       <section className="tenant-capture-card">
+        <div className="tenant-request-summary">
+          <div>
+            <p className="mobile-label">Requesting service at</p>
+            <strong>{propertyName}</strong>
+            <p>{unitLabel} is attached automatically to this request.</p>
+          </div>
+        </div>
+
         <form className="tenant-capture-form" onSubmit={handleSubmit}>
           <label className="tenant-camera-card">
             <div className="tenant-camera-icon" />
             <strong>Tap to add a photo</strong>
-            <p>The photo should be the main thing the tenant notices first.</p>
+            <p>Take one clear picture of the issue. AI uses the photo to guide the next step.</p>
             <input
               accept="image/*"
               capture="environment"
@@ -95,28 +151,31 @@ export function TenantIssueIntake() {
               multiple
               onChange={(event) => {
                 const files = Array.from(event.target.files ?? []);
-                setForm({
-                  ...form,
-                  photos: files.length ? files.map((file) => file.name) : []
-                });
+                void handlePhotoSelection(files);
               }}
             />
-            <span>{form.photos.length ? `${form.photos.length} photo(s) selected` : "No photo added yet"}</span>
+            <span>
+              {uploading
+                ? "Uploading photo..."
+                : form.photos.length
+                  ? `${form.photos.length} photo(s) attached`
+                  : "No photo added yet"}
+            </span>
           </label>
 
           <label className="tenant-input-block">
             <span>What is going on?</span>
             <textarea
-              rows={4}
+              rows={3}
               value={form.description}
               onChange={async (event) => {
                 const nextForm = { ...form, description: event.target.value };
                 setForm(nextForm);
-                if (event.target.value.trim().length > 20) {
+                if (event.target.value.trim().length > 16) {
                   await runPreflight(nextForm);
                 }
               }}
-              placeholder="Example: The dishwasher finishes but leaves standing water in the bottom."
+              placeholder="Example: There is water on the floor under the sink."
             />
           </label>
 
@@ -140,39 +199,21 @@ export function TenantIssueIntake() {
             </select>
           </label>
 
-          <div className="tenant-mini-grid">
-            <label className="tenant-input-block">
-              <span>Unit</span>
-              <select
-                value={form.unitId}
-                onChange={(event) => {
-                  setForm({ ...form, unitId: event.target.value });
-                }}
-              >
-                {units.map((unit) => (
-                  <option key={unit.id} value={unit.id}>
-                    {unit.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="tenant-input-block">
-              <span>Availability</span>
-              <select
-                value={form.tenantAvailability}
-                onChange={(event) => {
-                  setForm({ ...form, tenantAvailability: event.target.value });
-                }}
-              >
-                {availabilityOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+          <label className="tenant-input-block">
+            <span>Availability</span>
+            <select
+              value={form.tenantAvailability}
+              onChange={(event) => {
+                setForm({ ...form, tenantAvailability: event.target.value });
+              }}
+            >
+              {availabilityOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <label className="tenant-check-row">
             <input
@@ -189,7 +230,11 @@ export function TenantIssueIntake() {
           {error ? <p className="error-note">{error}</p> : null}
 
           <div className="tenant-submit-row">
-            <button className="mobile-primary-action" disabled={loading || !form.description.trim()} type="submit">
+            <button
+              className="mobile-primary-action"
+              disabled={loading || uploading || !form.description.trim()}
+              type="submit"
+            >
               {loading ? "Sending..." : "Send to AI"}
             </button>
           </div>
@@ -242,7 +287,7 @@ export function TenantIssueIntake() {
           <div className="tenant-ai-placeholder">
             <div className="tenant-ai-message">
               <strong>Simple tenant experience</strong>
-              <p>Take a picture, type one sentence, then wait for AI to guide you.</p>
+              <p>Take a picture, type one sentence, and AI will decide whether to guide you or escalate it.</p>
             </div>
             <div className="tenant-ai-message">
               <strong>Behind the scenes</strong>

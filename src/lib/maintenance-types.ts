@@ -15,6 +15,9 @@ export type IssueStatus =
 export type RecipientType = "tenant" | "manager" | "vendor";
 
 export type NotificationChannel = "in-app" | "sms" | "email";
+export type AppDataMode = "mock" | "supabase";
+export type AiMode = "rules" | "provider";
+export type UserRole = "tenant" | "manager";
 
 export interface Property {
   id: string;
@@ -39,6 +42,7 @@ export interface TenantUser {
   phone: string;
   email: string;
   unitId: string;
+  propertyId?: string;
 }
 
 export interface ManagerUser {
@@ -47,6 +51,14 @@ export interface ManagerUser {
   phone: string;
   email: string;
   propertyIds: string[];
+}
+
+export interface SessionUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  propertyId?: string;
+  unitId?: string;
 }
 
 export interface IssuePhoto {
@@ -174,6 +186,29 @@ export interface ManagerDecisionInput {
   approvedVendorId: string;
   approvedWindow: string;
   notes: string;
+}
+
+export interface AuthInviteInput {
+  email: string;
+  role: UserRole;
+  propertyId: string;
+  unitId?: string;
+  invitedBy: string;
+}
+
+export interface MagicLinkInput {
+  email: string;
+}
+
+export interface UploadPhotoResult {
+  fileName: string;
+  path: string;
+  publicUrl: string;
+}
+
+export interface TriageEnvelope {
+  triage: AITriageResult;
+  mode: AiMode;
 }
 
 export interface MaintenanceIssue {

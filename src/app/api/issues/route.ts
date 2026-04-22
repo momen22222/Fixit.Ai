@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { createIssue, listIssues } from "@/lib/maintenance-data";
+import { createIssueRecord, listIssueFeed } from "@/lib/services/issue-service";
 import { type MaintenanceIssueInput } from "@/lib/maintenance-types";
 
 export async function GET() {
-  return NextResponse.json({ issues: listIssues() });
+  const issues = await listIssueFeed();
+  return NextResponse.json({ issues });
 }
 
 export async function POST(request: Request) {
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing required issue fields." }, { status: 400 });
   }
 
-  const issue = createIssue({
+  const issue = await createIssueRecord({
     unitId: body.unitId,
     category: body.category,
     description: body.description,

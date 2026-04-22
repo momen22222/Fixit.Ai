@@ -2,15 +2,17 @@
 
 @theme inline {
   --font-sans: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --color-ink: #111827;
-  --color-muted: #526071;
-  --color-line: rgba(17, 24, 39, 0.1);
-  --color-cream: #f7f2ec;
-  --color-warm: #eed8ca;
-  --color-clay: #cd7d52;
-  --color-forest: #173a38;
-  --color-card: rgba(255, 250, 246, 0.82);
+  --font-display: "DM Serif Display", "Iowan Old Style", Georgia, serif;
+  --color-ink: #10243a;
+  --color-muted: #5c6f83;
+  --color-line: rgba(16, 36, 58, 0.1);
+  --color-cream: #f4f8fb;
+  --color-warm: #d9e6ef;
+  --color-clay: #2e6f9a;
+  --color-forest: #12395b;
+  --color-card: rgba(255, 255, 255, 0.84);
+  --color-accent-soft: #e3eef7;
+  --color-success-soft: #dff1e8;
 }
 
 * {
@@ -27,9 +29,9 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   background:
-    radial-gradient(circle at top left, rgba(205, 125, 82, 0.18), transparent 24%),
-    radial-gradient(circle at top right, rgba(23, 58, 56, 0.12), transparent 18%),
-    linear-gradient(180deg, #fbf6f0 0%, #f7f2ec 56%, #f3ede6 100%);
+    radial-gradient(circle at top left, rgba(46, 111, 154, 0.16), transparent 24%),
+    radial-gradient(circle at top right, rgba(18, 57, 91, 0.12), transparent 18%),
+    linear-gradient(180deg, #f8fbfd 0%, #f1f6fa 56%, #ecf2f7 100%);
 }
 
 a {
@@ -161,7 +163,7 @@ textarea {
 .button-primary {
   border: 0;
   background: var(--color-forest);
-  color: #f7f2ec;
+  color: #f4f8fb;
 }
 
 .landing-secondary,
@@ -454,7 +456,7 @@ textarea {
 
 .surface-strong,
 .accent-panel {
-  background: linear-gradient(180deg, rgba(238, 216, 202, 0.54), rgba(255, 250, 246, 0.9));
+  background: linear-gradient(180deg, rgba(227, 238, 247, 0.95), rgba(255, 255, 255, 0.95));
 }
 
 .section-copy {
@@ -495,7 +497,7 @@ textarea {
 .is-scheduled,
 .is-approved,
 .is-resolved {
-  background: rgba(71, 131, 98, 0.14);
+  background: rgba(53, 132, 91, 0.14);
   color: #205f43;
 }
 
@@ -905,6 +907,7 @@ textarea {
 .mobile-welcome-card p,
 .mobile-preview-card p,
 .mobile-explain-card p,
+.tenant-entry-auth-card p,
 .tenant-home p,
 .tenant-request-copy p,
 .tenant-status-card p,
@@ -926,7 +929,7 @@ textarea {
   border: 0;
   border-radius: 999px;
   background: var(--color-forest);
-  color: #f7f2ec;
+  color: #f4f8fb;
   font-weight: 700;
 }
 
@@ -967,8 +970,8 @@ textarea {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: linear-gradient(160deg, rgba(23, 58, 56, 0.88), rgba(205, 125, 82, 0.82));
-  color: #f7f2ec;
+  background: linear-gradient(160deg, rgba(18, 57, 91, 0.92), rgba(46, 111, 154, 0.82));
+  color: #f4f8fb;
 }
 
 .mobile-camera-glow,
@@ -1021,7 +1024,7 @@ textarea {
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 1rem;
-  padding: 0.9rem 0.9rem 6rem;
+  padding: 0.9rem 0.9rem 6.25rem;
 }
 
 .tenant-topbar {
@@ -1034,7 +1037,7 @@ textarea {
 .tenant-profile-chip {
   padding: 0.7rem 0.9rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(17, 24, 39, 0.08);
   font-weight: 700;
 }
@@ -1058,6 +1061,7 @@ textarea {
   grid-template-columns: 7.5rem 1fr;
   gap: 1rem;
   padding: 1rem;
+  align-items: center;
 }
 
 .tenant-status-actions,
@@ -1087,7 +1091,7 @@ textarea {
   border: 1px dashed rgba(17, 24, 39, 0.14);
   border-radius: 1.4rem;
   padding: 1rem;
-  background: rgba(247, 242, 236, 0.8);
+  background: rgba(239, 246, 251, 0.85);
 }
 
 .tenant-camera-card input {
@@ -1100,7 +1104,7 @@ textarea {
   border-radius: 1rem;
   background:
     radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.72), transparent 22%),
-    linear-gradient(180deg, rgba(23, 58, 56, 0.88), rgba(205, 125, 82, 0.78));
+    linear-gradient(180deg, rgba(18, 57, 91, 0.88), rgba(46, 111, 154, 0.78));
 }
 
 .tenant-input-block {
@@ -1135,7 +1139,7 @@ textarea {
   margin: 0;
   padding: 0.9rem 1rem;
   border-radius: 1rem;
-  background: rgba(23, 58, 56, 0.08);
+  background: rgba(18, 57, 91, 0.08);
   color: var(--color-forest);
 }
 
@@ -1152,12 +1156,12 @@ textarea {
   bottom: 0.9rem;
   left: 0.9rem;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.45rem;
   padding: 0.45rem;
   border-radius: 1.2rem;
   border: 1px solid rgba(17, 24, 39, 0.08);
-  background: rgba(255, 250, 246, 0.96);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(16px);
 }
 
@@ -1168,6 +1172,87 @@ textarea {
   background: rgba(255, 255, 255, 0.74);
   font-size: 0.84rem;
   font-weight: 700;
+}
+
+.mobile-label {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(16, 36, 58, 0.56);
+}
+
+.tenant-entry-hero,
+.tenant-entry-steps,
+.tenant-entry-manager-card,
+.tenant-entry-auth-card,
+.tenant-entry-auth-copy,
+.tenant-entry-form,
+.tenant-request-summary {
+  display: grid;
+  gap: 1rem;
+}
+
+.tenant-entry-badge {
+  width: fit-content;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(18, 57, 91, 0.08);
+  color: var(--color-forest);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tenant-entry-auth-card,
+.tenant-entry-manager-card {
+  padding: 1rem;
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.6rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 18px 42px rgba(16, 36, 58, 0.08);
+}
+
+.tenant-entry-auth-card h2,
+.tenant-entry-manager-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.tenant-entry-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tenant-entry-form .error-note,
+.tenant-entry-form .tenant-preflight {
+  margin: 0;
+}
+
+.tenant-request-summary {
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(16, 36, 58, 0.08);
+  border-radius: 1.1rem;
+  background: rgba(227, 238, 247, 0.55);
+}
+
+.tenant-request-summary strong {
+  font-size: 1rem;
+}
+
+.tenant-request-summary p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.assistant-chat {
+  display: grid;
+  gap: 0.75rem;
 }
 
 @media (min-width: 880px) {

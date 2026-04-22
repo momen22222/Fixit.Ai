@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getIssueById, getVendorById, units } from "@/lib/maintenance-data";
+import { getIssueDetail } from "@/lib/services/issue-service";
+import { getUnitSummary, getVendorSummary } from "@/lib/services/property-service";
 
 export default async function IssueDetailPage({
   params
@@ -8,14 +9,16 @@ export default async function IssueDetailPage({
   params: Promise<{ issueId: string }>;
 }) {
   const { issueId } = await params;
-  const issue = getIssueById(issueId);
+  const issue = await getIssueDetail(issueId);
 
   if (!issue) {
     notFound();
   }
 
-  const unit = units.find((item) => item.id === issue.unitId);
-  const vendor = issue.appointmentProposal ? getVendorById(issue.appointmentProposal.vendorId) : undefined;
+  const [unit, vendor] = await Promise.all([
+    getUnitSummary(issue.unitId),
+    issue.appointmentProposal ? getVendorSummary(issue.appointmentProposal.vendorId) : Promise.resolve(undefined)
+  ]);
 
   return (
     <section className="page-stack">
@@ -35,7 +38,7 @@ export default async function IssueDetailPage({
             <span className={`status-pill is-${issue.status}`}>{issue.status}</span>
           </div>
           <div className="detail-list-block">
-            <p>Unit: {unit?.label}</p>
+            <p>Unit: {unit?.label ?? issue.unitId}</p>
             <p>Availability: {issue.tenantAvailability}</p>
             <p>Permission to enter: {issue.permissionToEnter ? "Yes" : "No"}</p>
           </div>
@@ -52,8 +55,8 @@ export default async function IssueDetailPage({
             <Link className="button button-primary" href="/app/issues/new">
               Report another issue
             </Link>
-            <Link className="button button-secondary" href={`/app/manager/issues/${issue.id}`}>
-              View manager review
+            <Link className="button button-secondary" href="/app/dashboard">
+              Back home
             </Link>
           </div>
         </article>
@@ -64,9 +67,9 @@ export default async function IssueDetailPage({
           <p className="section-tag">Conversation and AI guidance</p>
           <h2>Everything stays attached to the issue.</h2>
         </div>
-        <div className="message-stack">
+        <div className="assistant-chat">
           {issue.messages.map((message) => (
-            <div className={`message-bubble ${message.role === "tenant" ? "tenant" : "assistant"}`} key={message.id}>
+            <div className={`assistant-bubble ${message.role === "tenant" ? "tenant" : "ai"}`} key={message.id}>
               {message.text}
             </div>
           ))}

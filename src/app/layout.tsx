@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "FieldFix PM",
+  title: "Fix it AI",
   description:
-    "Mobile-first property maintenance triage, manager approvals, and vendor scheduling for property management teams."
+    "Tenant-first property maintenance app with photo intake, AI triage, manager approval, and vendor dispatch."
 };
 
 export default function RootLayout({

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { createVendor, listVendors } from "@/lib/maintenance-data";
+import { listVendorDirectory } from "@/lib/services/vendor-service";
 import { type Vendor } from "@/lib/maintenance-types";
 
 export async function GET() {
-  return NextResponse.json({ vendors: listVendors() });
+  const vendors = await listVendorDirectory();
+  return NextResponse.json({ vendors });
 }
 
 export async function POST(request: Request) {
@@ -13,5 +14,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Vendor id and company name are required." }, { status: 400 });
   }
 
-  return NextResponse.json({ vendor: createVendor(body) }, { status: 201 });
+  return NextResponse.json(
+    {
+      error: "Vendor write operations are not wired for the live repository yet."
+    },
+    { status: 501 }
+  );
 }

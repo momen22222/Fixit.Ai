@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { ManagerApprovalForm } from "@/components/ManagerApprovalForm";
-import { getIssueById, getVendorById, units } from "@/lib/maintenance-data";
+import { getIssueDetail } from "@/lib/services/issue-service";
+import { getUnitSummary, getVendorSummary } from "@/lib/services/property-service";
 
 export default async function ManagerIssuePage({
   params
@@ -8,13 +10,13 @@ export default async function ManagerIssuePage({
   params: Promise<{ issueId: string }>;
 }) {
   const { issueId } = await params;
-  const issue = getIssueById(issueId);
+  const issue = await getIssueDetail(issueId);
 
   if (!issue) {
     notFound();
   }
 
-  const unit = units.find((item) => item.id === issue.unitId);
+  const unit = await getUnitSummary(issue.unitId);
 
   return (
     <section className="page-stack">
@@ -34,7 +36,7 @@ export default async function ManagerIssuePage({
             <span className={`status-pill is-${issue.status}`}>{issue.status}</span>
           </div>
           <div className="detail-list-block">
-            <p>Unit: {unit?.label}</p>
+            <p>Unit: {unit?.label ?? issue.unitId}</p>
             <p>Tenant availability: {issue.tenantAvailability}</p>
             <p>Permission to enter: {issue.permissionToEnter ? "Yes" : "No"}</p>
           </div>
@@ -48,7 +50,14 @@ export default async function ManagerIssuePage({
           </div>
           <div className="image-grid">
             {issue.photos.map((photo) => (
-              <img alt={photo.name} className="photo-thumb" key={photo.id} src={photo.url} />
+              <Image
+                alt={photo.name}
+                className="photo-thumb"
+                height={240}
+                key={photo.id}
+                src={photo.url}
+                width={360}
+              />
             ))}
           </div>
         </article>
@@ -60,8 +69,8 @@ export default async function ManagerIssuePage({
           <h2>Reliability first, lowest qualified price second.</h2>
         </div>
         <div className="card-list">
-          {issue.vendorRecommendations.map((vendor) => {
-            const vendorProfile = getVendorById(vendor.vendorId);
+          {await Promise.all(issue.vendorRecommendations.map(async (vendor) => {
+            const vendorProfile = await getVendorSummary(vendor.vendorId);
 
             return (
               <article className="list-card" key={vendor.vendorId}>
@@ -79,7 +88,7 @@ export default async function ManagerIssuePage({
                 </div>
               </article>
             );
-          })}
+          }))}
         </div>
       </section>
 

@@ -1,7 +1,7 @@
-import { listVendors } from "@/lib/maintenance-data";
+import { listVendorDirectory } from "@/lib/services/vendor-service";
 
-export default function VendorsPage() {
-  const vendors = listVendors();
+export default async function VendorsPage() {
+  const vendors = await listVendorDirectory();
 
   return (
     <section className="page-stack">

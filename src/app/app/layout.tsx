@@ -1,29 +1,31 @@
 import Link from "next/link";
+import { getTenantAppContext } from "@/lib/services/property-service";
 
 const navItems = [
   { href: "/app/dashboard", label: "Home" },
   { href: "/app/issues/new", label: "Request" },
-  { href: "/app/issues/issue-1001", label: "Status" },
-  { href: "/app/manager/approvals", label: "Manager" }
+  { href: "/app/issues/issue-1001", label: "Status" }
 ];
 
-export default function AppLayout({
+export default async function AppLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const context = await getTenantAppContext();
+
   return (
     <div className="tenant-app-shell">
       <header className="tenant-topbar">
         <div className="tenant-topbar-copy">
           <Link className="brand-lockup" href="/">
             <span className="brand-mark">Fix it AI</span>
-            <span className="brand-subtitle">Simple tenant maintenance</span>
+            <span className="brand-subtitle">{context.propertyName}</span>
           </Link>
         </div>
 
         <Link className="tenant-profile-chip" href="/app/dashboard">
-          Unit 3C
+          {context.unitLabel}
         </Link>
       </header>
 
