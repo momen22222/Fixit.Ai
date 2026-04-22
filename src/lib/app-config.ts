@@ -13,8 +13,12 @@ export const appConfig = {
   supabaseAnonKey: readEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
   supabaseServiceRoleKey: readEnv("SUPABASE_SERVICE_ROLE_KEY"),
   storageBucket: readEnv("SUPABASE_STORAGE_BUCKET") ?? "issue-photos",
-  aiProviderApiKey: readEnv("AI_PROVIDER_API_KEY"),
-  aiProviderName: readEnv("AI_PROVIDER_NAME") ?? "mock"
+  aiProviderApiKey: readEnv("GEMINI_API_KEY") ?? readEnv("AI_PROVIDER_API_KEY"),
+  aiProviderName: readEnv("AI_PROVIDER_NAME") ?? readEnv("AI_PROVIDER") ?? "mock",
+  aiModel: readEnv("AI_MODEL") ?? "gemini-2.5-flash",
+  tavilyApiKey: readEnv("TAVILY_API_KEY"),
+  googlePlacesApiKey: readEnv("GOOGLE_PLACES_API_KEY"),
+  yelpApiKey: readEnv("YELP_API_KEY")
 };
 
 export function isSupabaseConfigured() {

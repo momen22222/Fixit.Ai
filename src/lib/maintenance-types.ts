@@ -180,6 +180,18 @@ export interface VendorRecommendation {
   reason: string;
 }
 
+export interface ExternalVendorCandidate {
+  name: string;
+  trade: VendorTrade;
+  source: "gemini-google-search" | "tavily" | "google-places" | "yelp" | "manual";
+  url?: string;
+  phone?: string;
+  address?: string;
+  rating?: number;
+  reviewCount?: number;
+  reason: string;
+}
+
 export interface ManagerDecisionInput {
   issueId: string;
   decision: "approved" | "rejected" | "modified";

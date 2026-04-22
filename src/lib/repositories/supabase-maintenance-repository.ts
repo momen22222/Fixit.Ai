@@ -13,7 +13,7 @@ import {
   type VendorTrade
 } from "@/lib/maintenance-types";
 import { appConfig } from "@/lib/app-config";
-import { triageMaintenanceIssue } from "@/lib/maintenance-data";
+import { triageIssue } from "@/lib/services/triage-service";
 
 function missingClient(): never {
   throw new Error("Supabase is not configured.");
@@ -225,7 +225,7 @@ export const supabaseMaintenanceRepository: MaintenanceRepository = {
       throw new Error(unitError?.message ?? "Unit not found for this tenant.");
     }
 
-    const triage = triageMaintenanceIssue(input);
+    const { triage } = await triageIssue(input);
     const recommendations =
       triage.resolutionStatus === "resolved" ? [] : await rankSupabaseVendors(unit.property_id, triage.recommendedTrade);
     const appointmentProposal = buildAppointmentProposal(recommendations[0]);
