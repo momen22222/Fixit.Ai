@@ -92,6 +92,30 @@ export default async function ManagerRequestDetailPage({
       </section>
 
       <section className="manager-panel">
+        <p className="section-tag">AI conversation and tenant context</p>
+        <h2>Know exactly what happened before approving work.</h2>
+        <div className="manager-conversation-grid">
+          <article className="manager-vendor-card">
+            <p className="mobile-label">Tenant note</p>
+            <h2>{issue.description}</h2>
+            <p>Requested availability: {issue.tenantAvailability}</p>
+          </article>
+          <article className="manager-vendor-card">
+            <p className="mobile-label">AI diagnosis</p>
+            <h2>{issue.aiTriage.recommendedTrade}</h2>
+            <p>{issue.aiTriage.managerSummary}</p>
+          </article>
+        </div>
+        <div className="assistant-chat">
+          {issue.messages.map((message) => (
+            <div className={`assistant-bubble ${message.role === "tenant" ? "tenant" : "ai"}`} key={message.id}>
+              {message.text}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="manager-panel">
         <p className="section-tag">Decision</p>
         <h2>Approve, modify, or reject before vendor dispatch.</h2>
         <ManagerApprovalForm issue={issue} />

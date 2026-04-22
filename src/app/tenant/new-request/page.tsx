@@ -18,6 +18,10 @@ export default async function TenantNewRequestPage() {
         defaultUnitId={context.unitId}
         propertyName={context.propertyName}
         unitLabel={context.unitLabel}
+        propertyAddress={context.propertyAddress}
+        propertyCity={context.propertyCity}
+        propertyState={context.propertyState}
+        propertyPostalCode={context.propertyPostalCode}
       />
     </section>
   );

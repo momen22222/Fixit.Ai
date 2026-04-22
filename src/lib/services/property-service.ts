@@ -96,6 +96,9 @@ export async function getTenantAppContext() {
       unitId: data?.id ?? "",
       propertyName: property?.name ?? "Your property",
       unitLabel: data?.label ? `Unit ${data.label}` : "Assigned unit",
+      propertyCity: property?.city ?? "",
+      propertyState: property?.state ?? "",
+      propertyPostalCode: property?.postal_code ?? "",
       propertyAddress: property
         ? `${property.address}, ${property.city}, ${property.state} ${property.postal_code}`
         : ""
@@ -113,6 +116,9 @@ export async function getTenantAppContext() {
     unitId: session.unitId ?? fallbackTenant?.unitId ?? "unit-3c",
     propertyName: property?.name ?? "Assigned property",
     unitLabel: unit?.label ?? "Assigned unit",
+    propertyCity: property?.city ?? "",
+    propertyState: property?.state ?? "",
+    propertyPostalCode: property?.postalCode ?? "",
     propertyAddress: property ? `${property.address}, ${property.city}, ${property.state} ${property.postalCode}` : ""
   };
 }

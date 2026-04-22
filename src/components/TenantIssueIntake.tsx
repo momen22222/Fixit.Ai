@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { type MaintenanceIssue, type MaintenanceIssueInput } from "@/lib/maintenance-types";
+import {
+  type ExternalVendorCandidate,
+  type MaintenanceIssue,
+  type MaintenanceIssueInput,
+  type VendorRecommendation
+} from "@/lib/maintenance-types";
 
 const categories = [
   "Hot water heater issue",
@@ -24,9 +29,29 @@ type TenantIssueIntakeProps = {
   defaultUnitId: string;
   propertyName: string;
   unitLabel: string;
+  propertyAddress: string;
+  propertyCity: string;
+  propertyState: string;
+  propertyPostalCode: string;
 };
 
-export function TenantIssueIntake({ defaultUnitId, propertyName, unitLabel }: TenantIssueIntakeProps) {
+const timeBlocks = ["Today afternoon", "Tomorrow morning", "Tomorrow afternoon", "Next weekday morning"];
+
+function isExternalVendorCandidate(
+  vendor: ExternalVendorCandidate | VendorRecommendation
+): vendor is ExternalVendorCandidate {
+  return "name" in vendor;
+}
+
+export function TenantIssueIntake({
+  defaultUnitId,
+  propertyName,
+  unitLabel,
+  propertyAddress,
+  propertyCity,
+  propertyState,
+  propertyPostalCode
+}: TenantIssueIntakeProps) {
   const [form, setForm] = useState<MaintenanceIssueInput>({
     unitId: defaultUnitId,
     category: categories[0],
@@ -37,6 +62,10 @@ export function TenantIssueIntake({ defaultUnitId, propertyName, unitLabel }: Te
   });
   const [preflight, setPreflight] = useState<string | null>(null);
   const [issue, setIssue] = useState<MaintenanceIssue | null>(null);
+  const [vendorCandidates, setVendorCandidates] = useState<ExternalVendorCandidate[]>([]);
+  const [vendorSearchStatus, setVendorSearchStatus] = useState<string | null>(null);
+  const [selectedTimeBlock, setSelectedTimeBlock] = useState(timeBlocks[1]);
+  const [approvalRequested, setApprovalRequested] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +150,41 @@ export function TenantIssueIntake({ defaultUnitId, propertyName, unitLabel }: Te
       }
 
       setIssue(payload.issue);
+      setApprovalRequested(false);
+
+      if (payload.issue.aiTriage.resolutionStatus !== "resolved") {
+        setVendorSearchStatus("Searching for vendor options with AI...");
+
+        const vendorResponse = await fetch("/api/vendors/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            trade: payload.issue.aiTriage.recommendedTrade,
+            issueSummary: payload.issue.aiTriage.managerSummary,
+            propertyAddress,
+            city: propertyCity || "Denver",
+            state: propertyState || "CO",
+            postalCode: propertyPostalCode || "80205"
+          })
+        });
+
+        const vendorPayload = (await vendorResponse.json()) as {
+          vendors?: ExternalVendorCandidate[];
+          error?: string;
+        };
+
+        if (vendorResponse.ok) {
+          setVendorCandidates(vendorPayload.vendors ?? []);
+          setVendorSearchStatus(
+            vendorPayload.vendors?.length
+              ? "AI found vendor candidates for manager approval."
+              : "No external vendors found yet. The manager will use the approved vendor list."
+          );
+        } else {
+          setVendorCandidates([]);
+          setVendorSearchStatus(vendorPayload.error ?? "Vendor search was not available. Manager will review manually.");
+        }
+      }
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Unable to create issue.");
     } finally {
@@ -255,27 +319,89 @@ export function TenantIssueIntake({ defaultUnitId, propertyName, unitLabel }: Te
             </div>
 
             <div className="tenant-ai-message">
-              <strong>AI summary</strong>
+              <strong>What AI thinks is happening</strong>
               <p>{issue.aiTriage.managerSummary}</p>
             </div>
 
             <div className="tenant-ai-message">
-              <strong>Next prompt</strong>
-              {issue.aiTriage.followUpQuestions.length ? (
-                <p>{issue.aiTriage.followUpQuestions[0]}</p>
-              ) : (
-                <p>The issue was escalated immediately because it may be urgent.</p>
-              )}
+              <strong>Likely trade needed</strong>
+              <p>{issue.aiTriage.recommendedTrade}</p>
             </div>
 
             <div className="tenant-ai-message">
-              <strong>What the tenant needs to know</strong>
+              <strong>Safety notes</strong>
               <ul className="assistant-list">
                 {issue.aiTriage.safetyInstructions.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
+
+            {issue.aiTriage.diySteps.length ? (
+              <div className="tenant-ai-message">
+                <strong>Easy fix to try now</strong>
+                <ul className="assistant-list">
+                  {issue.aiTriage.diySteps.map((step) => (
+                    <li key={step.id}>
+                      {step.title}: {step.detail} Tools: {step.safeTools.join(", ")}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="tenant-ai-message">
+                <strong>No tenant repair recommended</strong>
+                <p>This looks like it should go straight to manager review instead of self-repair.</p>
+              </div>
+            )}
+
+            {issue.aiTriage.resolutionStatus !== "resolved" ? (
+              <div className="tenant-ai-message">
+                <strong>Vendor options</strong>
+                <p>{vendorSearchStatus ?? "Preparing vendor recommendation for manager review."}</p>
+                <div className="tenant-vendor-options">
+                  {((vendorCandidates.length ? vendorCandidates : issue.vendorRecommendations) as Array<
+                    ExternalVendorCandidate | VendorRecommendation
+                  >)
+                    .slice(0, 3)
+                    .map((vendor) => (
+                    <article className="tenant-vendor-option" key={isExternalVendorCandidate(vendor) ? vendor.name : vendor.vendorId}>
+                      <strong>{isExternalVendorCandidate(vendor) ? vendor.name : vendor.vendorId}</strong>
+                      <p>
+                        {isExternalVendorCandidate(vendor)
+                          ? vendor.reason
+                          : `${vendor.trade} vendor · ${vendor.reliabilityScore} reliability · ${vendor.proposedWindow}`}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+                <label className="tenant-input-block">
+                  <span>Preferred maintenance time block</span>
+                  <select value={selectedTimeBlock} onChange={(event) => setSelectedTimeBlock(event.target.value)}>
+                    {timeBlocks.map((block) => (
+                      <option key={block} value={block}>
+                        {block}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  className="mobile-primary-action"
+                  type="button"
+                  onClick={() => {
+                    setApprovalRequested(true);
+                  }}
+                >
+                  Send to property manager for approval
+                </button>
+                {approvalRequested ? (
+                  <p className="tenant-preflight">
+                    Sent to the property manager with the AI conversation, vendor recommendation, and requested time
+                    block: {selectedTimeBlock}.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             <div className="tenant-submit-row">
               <Link className="mobile-primary-action" href={`/tenant/issues/${issue.id}`}>
