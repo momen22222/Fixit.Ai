@@ -74,16 +74,16 @@ function normalizeGeminiResult(input: MaintenanceIssueInput, result: GeminiTriag
     urgencyLevel,
     safetyInstructions: result.safetyInstructions?.length
       ? result.safetyInstructions.slice(0, 5)
-      : ["Do not attempt repairs involving gas, live electricity, flooding, or disassembly."],
+      : ["Your safety comes first. Do not attempt repairs involving gas, live electricity, flooding, or disassembly."],
     followUpQuestions: result.followUpQuestions?.length
       ? result.followUpQuestions.slice(0, 4)
-      : ["When did you first notice the issue?"],
+      : ["When did you first notice the issue? No rush, a rough estimate is okay."],
     diySteps: urgencyLevel === "emergency" ? [] : diySteps,
     resolutionStatus: result.resolutionStatus ?? "needs-review",
     recommendedTrade,
     managerSummary:
       result.managerSummary ??
-      `${input.category} reported by tenant. AI recommends ${recommendedTrade} review after safe triage.`
+      `${input.category} reported by tenant. AI recommends ${recommendedTrade} review after safe triage. Tenant should not attempt unsafe repair work.`
   };
 }
 
@@ -113,9 +113,12 @@ export async function triageWithGemini(input: MaintenanceIssueInput): Promise<AI
   );
 
   const prompt = [
-    "You are a cautious property maintenance triage assistant.",
+    "You are a cautious, compassionate property maintenance triage assistant helping a tenant during an inconvenient or stressful home problem.",
     "Assess the tenant's maintenance issue using the photo(s), category, and description.",
     "Return JSON only. Do not include markdown.",
+    "Tone: calm, kind, reassuring, plain-spoken, and never dismissive. Make the tenant feel taken care of without overpromising.",
+    "Use tenant-facing language in safetyInstructions, followUpQuestions, and diySteps. Prefer phrases like 'only if it feels safe', 'no pressure', and 'your safety comes first'.",
+    "Keep managerSummary factual and manager-readable, but include enough context that the tenant does not need to repeat themselves.",
     "Never provide dangerous repair instructions. Do not tell tenants to open panels, touch wiring, repair gas lines, or perform skilled trade work.",
     "If the issue may involve gas smell, active flooding, sparks, burning smell, no heat in unsafe weather, sewage, structural damage, or electrical hazards, mark urgencyLevel as emergency and provide only safety instructions.",
     "Use one of these trades exactly: plumbing, appliance, electrical, hvac, general.",

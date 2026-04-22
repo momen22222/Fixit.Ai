@@ -183,24 +183,24 @@ function buildSafetyInstructions(category: string, description: string) {
 
   if (haystack.includes("gas smell")) {
     return [
-      "Leave the unit immediately if the smell is strong.",
-      "Do not use switches, flames, or appliances until the area is cleared.",
+      "Your safety comes first. Leave the unit immediately if the smell is strong.",
+      "Please do not use switches, flames, or appliances until the area is cleared.",
       "Call the emergency gas number and notify the property manager right away."
     ];
   }
 
   if (haystack.includes("flood")) {
     return [
-      "Shut off the nearest water supply if you can do it safely.",
+      "If you can do it safely, shut off the nearest water supply.",
       "Move valuables and electronics away from the water.",
-      "Notify the property manager immediately."
+      "Notify the property manager immediately so you are not handling this alone."
     ];
   }
 
   if (haystack.includes("spark") || haystack.includes("burning smell")) {
     return [
       "Stop using the affected outlet or appliance immediately.",
-      "Turn off the breaker only if it is safe and easy to identify.",
+      "Turn off the breaker only if it is safe and easy to identify. Do not take any risks.",
       "Notify the property manager immediately."
     ];
   }
@@ -215,8 +215,8 @@ function buildSafetyInstructions(category: string, description: string) {
 
   return [
     "Use only simple visual checks and basic household tools.",
-    "Stop if you notice water spreading, electrical risk, or gas odor.",
-    "Escalate to the property manager if the issue does not resolve quickly."
+    "Stop right away if you notice water spreading, electrical risk, or gas odor.",
+    "If the issue does not resolve quickly, your property manager can take it from here."
   ];
 }
 
@@ -227,7 +227,7 @@ function buildFollowUpQuestions(category: string, description: string) {
     return [
       "Is there standing water at the bottom after the cycle ends?",
       "Do you hear the dishwasher running but not draining?",
-      "Have you already checked that the sink disposal was fully run first?"
+      "No pressure if you have not checked yet, but was the sink disposal fully run first?"
     ];
   }
 
@@ -249,8 +249,8 @@ function buildFollowUpQuestions(category: string, description: string) {
 
   return [
     "When did you first notice the issue?",
-    "Is the problem constant or intermittent?",
-    "Have you already tried a simple reset or power cycle?"
+    "Is the problem constant, or does it come and go?",
+    "Have you already tried a simple reset or power cycle? It is okay if you have not."
   ];
 }
 
@@ -262,13 +262,13 @@ function buildDiySteps(category: string, description: string): TroubleshootingSt
       {
         id: "step-dishwasher-1",
         title: "Run the sink disposal first",
-        detail: "If your dishwasher drains through the disposal, run the disposal for a few seconds and retry drain.",
+        detail: "If your dishwasher drains through the disposal, run the disposal for a few seconds and retry drain. This is a common, low-risk thing to check.",
         safeTools: ["None"]
       },
       {
         id: "step-dishwasher-2",
         title: "Check for standing debris",
-        detail: "Remove the bottom rack and look for visible food debris around the filter. Clear only what is easy to reach.",
+        detail: "Remove the bottom rack and look for visible food debris around the filter. Clear only what is easy to reach, and skip this if it feels messy or unsafe.",
         safeTools: ["Gloves", "Paper towels"]
       },
       {
@@ -291,7 +291,7 @@ function buildDiySteps(category: string, description: string): TroubleshootingSt
       {
         id: "step-water-2",
         title: "Look for obvious leaks",
-        detail: "Inspect the floor around the heater closet for puddles or active dripping without removing any panels.",
+        detail: "Inspect the floor around the heater closet for puddles or active dripping without removing any panels. A photo of any water will help your manager respond faster.",
         safeTools: ["Flashlight"]
       },
       {

@@ -16,6 +16,27 @@ type ChatMessage = {
   text: string;
 };
 
+function buildTenantDiagnosisMessage(issue: MaintenanceIssue) {
+  if (issue.urgencyLevel === "emergency") {
+    return [
+      "I am really sorry you are dealing with this. This could be urgent, so your safety comes first.",
+      "Please do not try to repair it yourself. I will package the photo, your note, and a clear summary for your property manager right away."
+    ].join(" ");
+  }
+
+  if (!issue.aiTriage.diySteps.length) {
+    return [
+      "Thanks for sending that. I know maintenance problems are stressful, especially when you are not sure what is wrong.",
+      `From what you shared, this looks like it may need ${issue.aiTriage.recommendedTrade} help. I will keep the next steps simple and make sure your manager has the full context.`
+    ].join(" ");
+  }
+
+  return [
+    "Thanks for sending that. I know this is not fun to deal with, but you are in the right place.",
+    `This looks like it may be a ${issue.aiTriage.recommendedTrade} issue. I found a few safe, simple things you can try first, and if it still does not work, I will help send everything to your property manager.`
+  ].join(" ");
+}
+
 export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }: TenantMaintenanceChatProps) {
   const [photoNames, setPhotoNames] = useState<string[]>([]);
   const [description, setDescription] = useState("");
@@ -24,7 +45,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
     {
       id: "welcome",
       role: "assistant",
-      text: "Take a picture of your problem and tell me what is going on. I will help you understand it and see if there is a safe quick fix."
+      text: "Hi, I am here to help. Take a picture of the problem and tell me what is happening. I will walk you through it calmly, check if there is a safe quick fix, and help get your manager involved if needed."
     }
   ]);
   const [uploading, setUploading] = useState(false);
@@ -74,11 +95,11 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
         {
           id: `photo-ai-${Date.now()}`,
           role: "assistant",
-          text: "Photo received. Add one sentence about what you are seeing, and I will start diagnosing it."
+          text: "I got the photo. You are doing great. Add one short sentence about what you are seeing, and I will start figuring out the safest next step."
         }
       ]);
     } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "Unable to upload photos.");
+      setError(uploadError instanceof Error ? uploadError.message : "I could not upload that photo yet. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -95,7 +116,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
       const tenantMessageCount = messages.filter((message) => message.role === "tenant").length;
       const nextQuestion =
         issue.aiTriage.followUpQuestions[tenantMessageCount] ??
-        "If you can, tell me whether the problem is getting worse, staying the same, or only happening sometimes.";
+        "That helps. If you can, tell me whether the problem is getting worse, staying the same, or only happening sometimes.";
       const tools = issue.aiTriage.diySteps
         .flatMap((step) => step.safeTools)
         .filter((tool, index, allTools) => allTools.indexOf(tool) === index);
@@ -104,12 +125,12 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
       let assistantReply = nextQuestion;
 
       if (isToolQuestion && tools.length) {
-        assistantReply = `For the safe quick check, you should only need: ${tools.join(", ")}. If anything smells hot, sparks, leaks heavily, or requires opening panels, stop and I will send it to your manager.`;
+        assistantReply = `For the safe quick check, you should only need: ${tools.join(", ")}. Please only do what feels simple and safe. If anything smells hot, sparks, leaks heavily, or requires opening panels, stop. I will help send it to your manager.`;
       }
 
       if (isVendorQuestion) {
         assistantReply =
-          "I can prepare this for your property manager with the photo, diagnosis, and recommended trade. They approve any vendor booking before anyone is sent out.";
+          "Yes. I can prepare this for your property manager with the photo, what we discussed, and the recommended trade. You will not have to explain everything twice, and your manager approves any vendor booking before anyone is sent out.";
       }
 
       setMessages((current) => [
@@ -141,7 +162,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
       {
         id: `thinking-${Date.now()}`,
         role: "assistant",
-        text: "I am reviewing the photo and your note now..."
+        text: "I am reviewing the photo and your note now. I will keep this safe and simple."
       }
     ]);
 
@@ -176,18 +197,18 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
         {
           id: `diagnosis-${Date.now()}`,
           role: "assistant",
-          text: createdIssue.aiTriage.managerSummary
+          text: buildTenantDiagnosisMessage(createdIssue)
         },
         {
           id: `question-${Date.now()}`,
           role: "assistant",
           text:
             createdIssue.aiTriage.followUpQuestions[0] ??
-            "I have enough information to send this to your property manager for review."
+            "I have enough information to send this to your property manager for review, so you do not have to chase it down yourself."
         }
       ]);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to diagnose this issue.");
+      setError(submitError instanceof Error ? submitError.message : "I could not diagnose this yet. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -200,7 +221,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
           {propertyName} / {unitLabel}
         </p>
         <h1>Take a picture of your problem.</h1>
-        <p>We will help you understand what may be wrong and what to do next.</p>
+        <p>We will help you understand what may be wrong and stay with you through the next step.</p>
       </div>
 
       <div className="tenant-chat-window">
@@ -221,7 +242,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
 
             {issue.aiTriage.diySteps.length ? (
               <div className="chat-mini-section">
-                <strong>Safe quick fix to try</strong>
+                <strong>Safe quick fix to try, only if you feel comfortable</strong>
                 <ul className="assistant-list">
                   {issue.aiTriage.diySteps.slice(0, 3).map((step) => (
                     <li key={step.id}>
@@ -231,7 +252,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
                 </ul>
               </div>
             ) : (
-              <p>No self-repair is recommended. I will help send this to your property manager.</p>
+              <p>No self-repair is recommended here. That is okay. I will help send this to your property manager with the full context.</p>
             )}
 
             <Link className="mobile-primary-action" href={`/tenant/issues/${issue.id}`}>
