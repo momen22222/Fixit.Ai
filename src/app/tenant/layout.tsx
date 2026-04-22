@@ -3,7 +3,6 @@ import { getTenantAppContext } from "@/lib/services/property-service";
 
 const tenantNav = [
   { href: "/tenant/home", label: "Home" },
-  { href: "/tenant/new-request", label: "Report" },
   { href: "/tenant/issues", label: "Status" },
   { href: "/tenant/profile", label: "Profile" }
 ];
