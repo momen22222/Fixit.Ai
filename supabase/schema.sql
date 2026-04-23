@@ -24,8 +24,29 @@ create table if not exists app_users (
   role text not null check (role in ('tenant', 'manager')),
   email text not null,
   full_name text,
+  phone_number text,
+  preferred_contact text,
+  emergency_contact text,
   property_id uuid references properties(id) on delete set null,
   unit_id uuid references units(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+alter table app_users add column if not exists phone_number text;
+alter table app_users add column if not exists preferred_contact text;
+alter table app_users add column if not exists emergency_contact text;
+
+create table if not exists tenant_invites (
+  id uuid primary key default gen_random_uuid(),
+  invite_code text not null unique,
+  role text not null default 'tenant' check (role in ('tenant', 'manager')),
+  email text,
+  property_id uuid not null references properties(id) on delete cascade,
+  unit_id uuid references units(id) on delete cascade,
+  invited_by uuid references auth.users(id) on delete set null,
+  expires_at timestamptz,
+  claimed_at timestamptz,
+  claimed_by uuid references auth.users(id) on delete set null,
   created_at timestamptz not null default now()
 );
 
@@ -109,11 +130,36 @@ create table if not exists notification_events (
 alter table properties enable row level security;
 alter table units enable row level security;
 alter table app_users enable row level security;
+alter table tenant_invites enable row level security;
 alter table maintenance_issues enable row level security;
 alter table issue_messages enable row level security;
 alter table manager_approvals enable row level security;
 alter table work_orders enable row level security;
 alter table notification_events enable row level security;
+
+create policy "users can view their own app profile"
+on app_users
+for select
+using (id = auth.uid());
+
+create policy "users can update their own app profile"
+on app_users
+for update
+using (id = auth.uid())
+with check (id = auth.uid());
+
+create policy "managers can view property invites"
+on tenant_invites
+for select
+using (
+  exists (
+    select 1
+    from app_users
+    where app_users.id = auth.uid()
+      and app_users.role = 'manager'
+      and app_users.property_id = tenant_invites.property_id
+  )
+);
 
 create policy "tenants can view their own issues"
 on maintenance_issues

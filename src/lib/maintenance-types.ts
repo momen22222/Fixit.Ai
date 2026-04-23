@@ -210,6 +210,18 @@ export interface AuthInviteInput {
 
 export interface MagicLinkInput {
   email: string;
+  redirectTo?: string;
+}
+
+export interface CompleteProfileInput {
+  role: UserRole;
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  preferredContact: string;
+  emergencyContact?: string;
+  inviteCode: string;
+  accessToken?: string;
 }
 
 export interface UploadPhotoResult {

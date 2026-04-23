@@ -1207,6 +1207,7 @@ textarea {
 }
 
 .tenant-entry-auth-card,
+.signup-portal-card,
 .tenant-entry-manager-card {
   padding: 1rem;
   border: 1px solid rgba(16, 36, 58, 0.08);
@@ -1216,6 +1217,7 @@ textarea {
 }
 
 .tenant-entry-auth-card h2,
+.signup-portal-card h2,
 .tenant-entry-manager-card h2 {
   margin: 0;
   font-family: var(--font-display);
@@ -1226,6 +1228,30 @@ textarea {
 .tenant-entry-inline-actions {
   display: flex;
   flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.signup-portal-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.signup-auth-actions {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.google-signin-button {
+  min-height: 3.15rem;
+  border: 1px solid rgba(16, 36, 58, 0.1);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-forest);
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(16, 36, 58, 0.08);
+}
+
+.signup-portal-card .tenant-entry-form {
   gap: 0.75rem;
 }
 
