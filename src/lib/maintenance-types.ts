@@ -115,6 +115,22 @@ export interface Vendor {
   notes: string;
 }
 
+export interface VendorInput {
+  id?: string;
+  companyName: string;
+  trades: VendorTrade[];
+  approved: boolean;
+  reliabilityScore: number;
+  completionRate: number;
+  city: string;
+  postalCodes: string[];
+  tripFee: number;
+  hourlyRate: number;
+  nextWindow: string;
+  responseHours: number;
+  notes: string;
+}
+
 export interface AppointmentProposal {
   vendorId: string;
   proposedWindow: string;

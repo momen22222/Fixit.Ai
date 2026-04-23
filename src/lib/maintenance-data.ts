@@ -12,6 +12,7 @@ import {
   type TroubleshootingStep,
   type Unit,
   type Vendor,
+  type VendorInput,
   type VendorRecommendation,
   type VendorTrade,
   type WorkOrder
@@ -536,6 +537,34 @@ export function listIssues() {
 
 export function listVendors() {
   return vendorStore;
+}
+
+function vendorFromInput(input: VendorInput): Vendor {
+  return {
+    id: input.id ?? nextId("vendor", vendorStore.length).toLowerCase(),
+    companyName: input.companyName,
+    trades: input.trades.length ? input.trades : ["general"],
+    approved: input.approved,
+    reliabilityScore: input.reliabilityScore,
+    completionRate: input.completionRate,
+    coverageAreas: [{ city: input.city, postalCodes: input.postalCodes }],
+    rateCard: { tripFee: input.tripFee, hourlyRate: input.hourlyRate },
+    availability: { nextWindow: input.nextWindow, responseHours: input.responseHours },
+    notes: input.notes
+  };
+}
+
+export function upsertVendor(input: VendorInput) {
+  const vendor = vendorFromInput(input);
+  const existingIndex = vendorStore.findIndex((item) => item.id === vendor.id);
+
+  if (existingIndex >= 0) {
+    vendorStore = vendorStore.map((item) => (item.id === vendor.id ? vendor : item));
+    return vendor;
+  }
+
+  vendorStore = [vendor, ...vendorStore];
+  return vendor;
 }
 
 export function getIssueById(issueId: string) {

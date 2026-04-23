@@ -3,9 +3,10 @@ import {
   createIssue,
   getIssueById,
   listIssues,
-  listVendors
+  listVendors,
+  upsertVendor
 } from "@/lib/maintenance-data";
-import { type MaintenanceIssueInput, type ManagerDecisionInput } from "@/lib/maintenance-types";
+import { type MaintenanceIssueInput, type ManagerDecisionInput, type VendorInput } from "@/lib/maintenance-types";
 import { type MaintenanceRepository } from "@/lib/repositories/maintenance-repository";
 
 export const mockMaintenanceRepository: MaintenanceRepository = {
@@ -27,5 +28,9 @@ export const mockMaintenanceRepository: MaintenanceRepository = {
 
   async listVendors() {
     return listVendors();
+  },
+
+  async upsertVendor(input: VendorInput) {
+    return upsertVendor(input);
   }
 };

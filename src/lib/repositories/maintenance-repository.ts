@@ -1,4 +1,10 @@
-import { type MaintenanceIssue, type MaintenanceIssueInput, type ManagerDecisionInput, type Vendor } from "@/lib/maintenance-types";
+import {
+  type MaintenanceIssue,
+  type MaintenanceIssueInput,
+  type ManagerDecisionInput,
+  type Vendor,
+  type VendorInput
+} from "@/lib/maintenance-types";
 
 export interface MaintenanceRepository {
   listIssues(): Promise<MaintenanceIssue[]>;
@@ -6,4 +12,5 @@ export interface MaintenanceRepository {
   createIssue(input: MaintenanceIssueInput): Promise<MaintenanceIssue>;
   approveIssue(input: ManagerDecisionInput): Promise<{ issue: MaintenanceIssue; workOrder: unknown }>;
   listVendors(): Promise<Vendor[]>;
+  upsertVendor(input: VendorInput): Promise<Vendor>;
 }

@@ -9,6 +9,7 @@ import {
   type MaintenanceIssueInput,
   type ManagerDecisionInput,
   type Vendor,
+  type VendorInput,
   type VendorRecommendation,
   type VendorTrade
 } from "@/lib/maintenance-types";
@@ -314,5 +315,31 @@ export const supabaseMaintenanceRepository: MaintenanceRepository = {
     }
 
     return ((data ?? []) as SupabaseVendorRow[]).map(mapVendor);
+  },
+
+  async upsertVendor(input: VendorInput) {
+    const supabase = getSupabaseServiceClient() ?? missingClient();
+    const payload = {
+      ...(input.id ? { id: input.id } : {}),
+      company_name: input.companyName,
+      trades: input.trades,
+      approved: input.approved,
+      reliability_score: input.reliabilityScore,
+      completion_rate: input.completionRate,
+      city: input.city,
+      coverage_postal_codes: input.postalCodes,
+      trip_fee: input.tripFee,
+      hourly_rate: input.hourlyRate,
+      next_window: input.nextWindow,
+      response_hours: input.responseHours,
+      notes: input.notes
+    };
+    const { data, error } = await supabase.from("vendors").upsert(payload).select("*").single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return mapVendor(data as SupabaseVendorRow);
   }
 };

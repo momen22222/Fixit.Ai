@@ -1,3 +1,4 @@
+import { ManagerVendorForm } from "@/components/ManagerVendorForm";
 import { listVendorDirectory } from "@/lib/services/vendor-service";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,10 @@ export default async function ManagerVendorsPage() {
           When an issue needs dispatch, Fix it AI recommends the best approved vendor for the property. If no approved
           vendor covers the trade or area, the manager can search outside candidates and decide whether to add one.
         </p>
+      </section>
+
+      <section className="manager-panel">
+        <ManagerVendorForm />
       </section>
 
       <div className="manager-vendor-grid">

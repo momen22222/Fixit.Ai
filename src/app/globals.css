@@ -1730,6 +1730,7 @@ textarea {
 .manager-conversation-grid,
 .manager-request-table,
 .manager-panel,
+.manager-vendor-form,
 .vendor-fallback-panel,
 .manager-hero {
   display: grid;
@@ -1817,6 +1818,36 @@ textarea {
   margin-top: 1rem;
 }
 
+.manager-form-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.manager-trade-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.trade-toggle {
+  border: 1px solid rgba(16, 36, 58, 0.12);
+  border-radius: 999px;
+  padding: 0.65rem 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--color-forest);
+  font-weight: 800;
+}
+
+.trade-toggle.is-selected {
+  border-color: transparent;
+  background: var(--color-forest);
+  color: #fff;
+}
+
+.manager-vendor-form {
+  gap: 0.9rem;
+}
+
 .field {
   display: grid;
   gap: 0.5rem;
@@ -1870,6 +1901,10 @@ textarea {
 
   .manager-metric-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .manager-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .manager-dashboard-grid,
