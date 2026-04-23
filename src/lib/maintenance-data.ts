@@ -395,7 +395,9 @@ export function rankVendors(propertyId: string, trade: VendorTrade): VendorRecom
       reliabilityScore: vendor.reliabilityScore,
       estimatedCost: estimateCost(vendor),
       proposedWindow: vendor.availability.nextWindow,
-      reason: `${vendor.companyName} is approved, covers the property, and balances top reliability with a competitive rate.`
+      reason: `${vendor.companyName} is approved, covers the property, and balances top reliability with a competitive rate.`,
+      source: "approved-directory" as const,
+      requiresManagerApproval: true
     }));
 }
 

@@ -178,6 +178,8 @@ export interface VendorRecommendation {
   estimatedCost: number;
   proposedWindow: string;
   reason: string;
+  source?: "approved-directory" | "external-search";
+  requiresManagerApproval?: boolean;
 }
 
 export interface ExternalVendorCandidate {
@@ -190,6 +192,13 @@ export interface ExternalVendorCandidate {
   rating?: number;
   reviewCount?: number;
   reason: string;
+}
+
+export interface VendorRecommendationPlan {
+  strategy: "approved-first" | "external-backup-needed";
+  approvedRecommendations: VendorRecommendation[];
+  externalCandidates: ExternalVendorCandidate[];
+  note: string;
 }
 
 export interface ManagerDecisionInput {

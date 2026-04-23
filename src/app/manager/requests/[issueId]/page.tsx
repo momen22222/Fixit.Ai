@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ManagerApprovalForm } from "@/components/ManagerApprovalForm";
+import { ManagerVendorFallbackSearch } from "@/components/ManagerVendorFallbackSearch";
 import { getIssueDetail } from "@/lib/services/issue-service";
 import { getUnitSummary, getVendorSummary } from "@/lib/services/property-service";
 
@@ -67,6 +68,11 @@ export default async function ManagerRequestDetailPage({
 
       <section className="manager-panel">
         <p className="section-tag">Vendor recommendation</p>
+        <h2>Approved vendor match comes first.</h2>
+        <p>
+          Fix it AI checks your approved directory before external search. Outside vendors are backup candidates only and
+          still need your approval.
+        </p>
         <div className="manager-vendor-grid">
           {await Promise.all(
             issue.vendorRecommendations.map(async (recommendation) => {
@@ -89,6 +95,15 @@ export default async function ManagerRequestDetailPage({
             })
           )}
         </div>
+        <ManagerVendorFallbackSearch
+          approvedRecommendations={issue.vendorRecommendations}
+          city={unit?.property?.city ?? ""}
+          issueSummary={issue.aiTriage.managerSummary}
+          postalCode={unit?.property?.postalCode ?? ""}
+          propertyAddress={unit?.property?.address ?? ""}
+          state={unit?.property?.state ?? ""}
+          trade={issue.aiTriage.recommendedTrade}
+        />
       </section>
 
       <section className="manager-panel">

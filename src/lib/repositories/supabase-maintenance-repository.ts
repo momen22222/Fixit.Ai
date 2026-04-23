@@ -158,7 +158,9 @@ async function rankSupabaseVendors(propertyId: string, trade: VendorTrade) {
       reliabilityScore: vendor.reliabilityScore,
       estimatedCost: estimateCost(vendor),
       proposedWindow: vendor.availability.nextWindow,
-      reason: `${vendor.companyName} is approved for this property and balances reliability with cost.`
+      reason: `${vendor.companyName} is approved for this property and balances reliability with cost.`,
+      source: "approved-directory" as const,
+      requiresManagerApproval: true
     }));
 }
 

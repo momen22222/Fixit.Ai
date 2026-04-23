@@ -1,8 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { appConfig } from "@/lib/app-config";
-import { type ExternalVendorCandidate, type VendorTrade } from "@/lib/maintenance-types";
+import {
+  type ExternalVendorCandidate,
+  type VendorRecommendation,
+  type VendorRecommendationPlan,
+  type VendorTrade
+} from "@/lib/maintenance-types";
+import { listVendorDirectory } from "@/lib/services/vendor-service";
 
-type VendorSearchInput = {
+export type VendorSearchInput = {
   trade: VendorTrade;
   issueSummary: string;
   propertyAddress: string;
@@ -104,4 +110,57 @@ export async function searchExternalVendors(input: VendorSearchInput): Promise<E
     ...(geminiResults.status === "fulfilled" ? geminiResults.value : []),
     ...(tavilyResults.status === "fulfilled" ? tavilyResults.value : [])
   ].slice(0, 8);
+}
+
+function estimateApprovedVendorCost(vendor: Awaited<ReturnType<typeof listVendorDirectory>>[number]) {
+  return vendor.rateCard.tripFee + vendor.rateCard.hourlyRate;
+}
+
+export async function recommendVendorPlan(input: VendorSearchInput): Promise<VendorRecommendationPlan> {
+  const approvedRecommendations: VendorRecommendation[] = (await listVendorDirectory())
+    .filter(
+      (vendor) =>
+        vendor.approved &&
+        vendor.trades.includes(input.trade) &&
+        vendor.coverageAreas.some(
+          (coverage) => coverage.city === input.city && coverage.postalCodes.includes(input.postalCode)
+        )
+    )
+    .sort((left, right) => {
+      if (right.reliabilityScore !== left.reliabilityScore) {
+        return right.reliabilityScore - left.reliabilityScore;
+      }
+
+      return estimateApprovedVendorCost(left) - estimateApprovedVendorCost(right);
+    })
+    .map((vendor) => ({
+      vendorId: vendor.id,
+      trade: input.trade,
+      reliabilityScore: vendor.reliabilityScore,
+      estimatedCost: estimateApprovedVendorCost(vendor),
+      proposedWindow: vendor.availability.nextWindow,
+      reason: `${vendor.companyName} is already approved for this property, covers ${input.postalCode}, and ranks well on reliability before price.`,
+      source: "approved-directory",
+      requiresManagerApproval: true
+    }));
+
+  if (approvedRecommendations.length) {
+    return {
+      strategy: "approved-first",
+      approvedRecommendations,
+      externalCandidates: [],
+      note:
+        "Approved vendors are available. Use the property manager directory first; external search is optional and should only be used if the manager wants more options."
+    };
+  }
+
+  const externalCandidates = await searchExternalVendors(input);
+
+  return {
+    strategy: "external-backup-needed",
+    approvedRecommendations: [],
+    externalCandidates,
+    note:
+      "No approved vendor matched this trade and service area. External vendors are backup candidates only and require manager review before dispatch."
+  };
 }

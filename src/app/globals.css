@@ -1730,6 +1730,7 @@ textarea {
 .manager-conversation-grid,
 .manager-request-table,
 .manager-panel,
+.vendor-fallback-panel,
 .manager-hero {
   display: grid;
   gap: 1rem;
@@ -1778,6 +1779,14 @@ textarea {
 
 .manager-panel-strong {
   background: linear-gradient(150deg, rgba(227, 238, 247, 0.9), rgba(255, 255, 255, 0.94));
+}
+
+.vendor-fallback-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px dashed rgba(18, 57, 91, 0.22);
+  border-radius: 1.2rem;
+  background: rgba(227, 238, 247, 0.45);
 }
 
 .manager-request-row {
