@@ -37,6 +37,110 @@ function buildTenantDiagnosisMessage(issue: MaintenanceIssue) {
   ].join(" ");
 }
 
+function textAnswersQuestion(question: string, tenantText: string) {
+  const questionText = question.toLowerCase();
+  const answerText = tenantText.toLowerCase();
+
+  const checks = [
+    {
+      question: ["standing water", "draining"],
+      answer: ["standing water", "water sitting", "bottom", "not draining", "won't drain", "wont drain", "drain"]
+    },
+    {
+      question: ["hear", "running"],
+      answer: ["hear", "sound", "running", "humming", "quiet", "noise"]
+    },
+    {
+      question: ["disposal"],
+      answer: ["disposal", "garbage disposal", "sink"]
+    },
+    {
+      question: ["anywhere", "one fixture"],
+      answer: ["everywhere", "anywhere", "whole unit", "all faucets", "one faucet", "bathroom", "kitchen"]
+    },
+    {
+      question: ["suddenly", "gradually"],
+      answer: ["sudden", "suddenly", "gradual", "today", "yesterday", "this morning", "last night", "started"]
+    },
+    {
+      question: ["water under", "heater closet"],
+      answer: ["leak", "puddle", "water under", "water around", "heater closet", "dripping"]
+    },
+    {
+      question: ["one outlet", "entire room"],
+      answer: ["one outlet", "room", "entire room", "whole room", "outlet"]
+    },
+    {
+      question: ["breaker"],
+      answer: ["breaker", "tripped", "panel"]
+    },
+    {
+      question: ["burnt"],
+      answer: ["burnt", "burning", "smell", "hot", "smoke"]
+    },
+    {
+      question: ["first notice"],
+      answer: ["today", "yesterday", "this morning", "last night", "week", "noticed", "started"]
+    },
+    {
+      question: ["constant", "come and go"],
+      answer: ["constant", "always", "intermittent", "sometimes", "comes and goes", "come and go"]
+    },
+    {
+      question: ["reset", "power cycle"],
+      answer: ["reset", "restarted", "power cycle", "turned off", "turned it off", "unplugged"]
+    }
+  ];
+
+  return checks.some(
+    (check) =>
+      check.question.some((keyword) => questionText.includes(keyword)) &&
+      check.answer.some((keyword) => answerText.includes(keyword))
+  );
+}
+
+function getMeaningfulTenantMessages(messages: ChatMessage[]) {
+  return messages
+    .filter((message) => message.role === "tenant")
+    .map((message) => message.text)
+    .filter((text) => !/photo[s]? attached/i.test(text));
+}
+
+function getSmartFollowUpQuestion(issue: MaintenanceIssue, messages: ChatMessage[], latestTenantText = "") {
+  if (issue.urgencyLevel === "emergency") {
+    return null;
+  }
+
+  const tenantTexts = [...getMeaningfulTenantMessages(messages), latestTenantText].join(" ");
+  const askedAssistantText = messages
+    .filter((message) => message.role === "assistant")
+    .map((message) => message.text.toLowerCase())
+    .join(" ");
+  const meaningfulTenantCount = getMeaningfulTenantMessages(messages).length + (latestTenantText ? 1 : 0);
+
+  if (meaningfulTenantCount >= 2) {
+    return null;
+  }
+
+  return (
+    issue.aiTriage.followUpQuestions.find(
+      (question) => !askedAssistantText.includes(question.toLowerCase()) && !textAnswersQuestion(question, tenantTexts)
+    ) ?? null
+  );
+}
+
+function buildNextActionMessage(issue: MaintenanceIssue) {
+  if (issue.urgencyLevel === "emergency") {
+    return "I have enough to escalate this. Please focus on safety first, and your manager will get the full summary.";
+  }
+
+  if (issue.aiTriage.diySteps.length) {
+    return "I have enough to give you a safe first step. Try only the quick check below if you feel comfortable. If it does not work, I can help send this to your manager with the full context.";
+  }
+
+  return "I have enough information to send this to your property manager for review, so you do not have to explain everything twice.";
+}
+
 export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }: TenantMaintenanceChatProps) {
   const [photoNames, setPhotoNames] = useState<string[]>([]);
   const [description, setDescription] = useState("");
@@ -113,16 +217,25 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
     }
 
     if (issue) {
-      const tenantMessageCount = messages.filter((message) => message.role === "tenant").length;
-      const nextQuestion =
-        issue.aiTriage.followUpQuestions[tenantMessageCount] ??
-        "That helps. If you can, tell me whether the problem is getting worse, staying the same, or only happening sometimes.";
+      const nextQuestion = getSmartFollowUpQuestion(issue, messages, tenantQuestion);
       const tools = issue.aiTriage.diySteps
         .flatMap((step) => step.safeTools)
         .filter((tool, index, allTools) => allTools.indexOf(tool) === index);
       const isToolQuestion = /tool|need|fix|try|myself|own/i.test(tenantQuestion);
       const isVendorQuestion = /vendor|schedule|book|manager|maintenance|repair/i.test(tenantQuestion);
-      let assistantReply = nextQuestion;
+      const isResolvedMessage = /worked|fixed|resolved|it works|all good|came back/i.test(tenantQuestion);
+      const isStillBrokenMessage = /still|not working|didn't work|didnt work|same|worse|no change/i.test(tenantQuestion);
+      let assistantReply = nextQuestion ?? buildNextActionMessage(issue);
+
+      if (isResolvedMessage) {
+        assistantReply =
+          "That is a relief. I am glad it is working again. I will keep the request details here in case it comes back, but you do not need to do anything else right now.";
+      }
+
+      if (isStillBrokenMessage) {
+        assistantReply =
+          "Thanks for trying that. Since it is still happening, I would not keep troubleshooting. I can package the photo, what you tried, and the likely trade for your property manager.";
+      }
 
       if (isToolQuestion && tools.length) {
         assistantReply = `For the safe quick check, you should only need: ${tools.join(", ")}. Please only do what feels simple and safe. If anything smells hot, sparks, leaks heavily, or requires opening panels, stop. I will help send it to your manager.`;
@@ -202,9 +315,7 @@ export function TenantMaintenanceChat({ defaultUnitId, propertyName, unitLabel }
         {
           id: `question-${Date.now()}`,
           role: "assistant",
-          text:
-            createdIssue.aiTriage.followUpQuestions[0] ??
-            "I have enough information to send this to your property manager for review, so you do not have to chase it down yourself."
+          text: getSmartFollowUpQuestion(createdIssue, current, tenantQuestion) ?? buildNextActionMessage(createdIssue)
         }
       ]);
     } catch (submitError) {

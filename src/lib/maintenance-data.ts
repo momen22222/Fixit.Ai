@@ -225,32 +225,24 @@ function buildFollowUpQuestions(category: string, description: string) {
 
   if (haystack.includes("dishwasher")) {
     return [
-      "Is there standing water at the bottom after the cycle ends?",
-      "Do you hear the dishwasher running but not draining?",
-      "No pressure if you have not checked yet, but was the sink disposal fully run first?"
+      "Is there standing water at the bottom after the cycle ends?"
     ];
   }
 
   if (haystack.includes("hot water") || haystack.includes("water heater")) {
     return [
-      "Is there no hot water anywhere in the unit or only at one fixture?",
-      "Did the issue start suddenly today or gradually over time?",
-      "Do you see any water under or around the heater closet?"
+      "Is there no hot water anywhere in the unit or only at one fixture?"
     ];
   }
 
   if (haystack.includes("outlet") || haystack.includes("breaker")) {
     return [
-      "Is the issue limited to one outlet or an entire room?",
-      "Did a breaker trip recently?",
       "Do you smell anything burnt near the outlet or panel?"
     ];
   }
 
   return [
-    "When did you first notice the issue?",
-    "Is the problem constant, or does it come and go?",
-    "Have you already tried a simple reset or power cycle? It is okay if you have not."
+    "Is the problem constant, or does it come and go?"
   ];
 }
 

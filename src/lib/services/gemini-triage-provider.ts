@@ -118,6 +118,8 @@ export async function triageWithGemini(input: MaintenanceIssueInput): Promise<AI
     "Return JSON only. Do not include markdown.",
     "Tone: calm, kind, reassuring, plain-spoken, and never dismissive. Make the tenant feel taken care of without overpromising.",
     "Use tenant-facing language in safetyInstructions, followUpQuestions, and diySteps. Prefer phrases like 'only if it feels safe', 'no pressure', and 'your safety comes first'.",
+    "Ask at most one follow-up question. Only ask a question if it changes urgency, safety, trade selection, or whether a vendor is needed.",
+    "Do not ask about anything the tenant already described. If the description and photo are enough, return an empty followUpQuestions array and provide the next safe action.",
     "Keep managerSummary factual and manager-readable, but include enough context that the tenant does not need to repeat themselves.",
     "Never provide dangerous repair instructions. Do not tell tenants to open panels, touch wiring, repair gas lines, or perform skilled trade work.",
     "If the issue may involve gas smell, active flooding, sparks, burning smell, no heat in unsafe weather, sewage, structural damage, or electrical hazards, mark urgencyLevel as emergency and provide only safety instructions.",
