@@ -16,7 +16,7 @@ export default async function ManagerDashboardPage() {
       <div className="manager-hero">
         <div>
           <p className="eyebrow">Property manager</p>
-          <h1>Maintenance command center.</h1>
+          <h1>Maintenance operations</h1>
           <p>Review AI triage, approve vendors, and keep tenants updated from one work queue.</p>
         </div>
         <Link className="button button-primary" href="/manager/requests">
@@ -65,7 +65,7 @@ export default async function ManagerDashboardPage() {
 
         <section className="manager-panel">
           <p className="section-tag">Operating rule</p>
-          <h2>AI prepares the handoff. Humans approve dispatch.</h2>
+          <h2>AI prepares the handoff. Managers approve dispatch.</h2>
           <p>
             Tenants get simple guidance, but vendor scheduling stays gated by the property manager before a work order
             is confirmed.

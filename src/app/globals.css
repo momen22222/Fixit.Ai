@@ -1688,37 +1688,41 @@ textarea {
 .manager-shell {
   min-height: 100vh;
   display: grid;
-  background:
-    radial-gradient(circle at top right, rgba(46, 111, 154, 0.12), transparent 24rem),
-    linear-gradient(180deg, #f7fafc 0%, #edf3f7 100%);
+  background: #f5f7f9;
 }
 
 .manager-sidebar {
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
   align-content: start;
-  padding: 1rem;
+  padding: 1.15rem;
   border-bottom: 1px solid rgba(16, 36, 58, 0.08);
-  background: rgba(255, 255, 255, 0.82);
+  background: #ffffff;
 }
 
 .manager-nav {
   display: flex;
-  gap: 0.55rem;
+  gap: 0.4rem;
   overflow-x: auto;
 }
 
 .manager-nav-link {
   flex: 0 0 auto;
-  padding: 0.75rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(18, 57, 91, 0.07);
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: rgba(16, 36, 58, 0.72);
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.manager-nav-link:hover {
+  background: rgba(18, 57, 91, 0.06);
   color: var(--color-forest);
-  font-weight: 800;
 }
 
 .manager-content {
-  width: min(100%, 72rem);
+  width: min(100%, 78rem);
   padding: 1rem;
   justify-self: center;
 }
@@ -1739,37 +1743,53 @@ textarea {
 
 .manager-hero {
   align-items: start;
-  padding: 1.1rem;
-  border: 1px solid rgba(16, 36, 58, 0.08);
-  border-radius: 1.7rem;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 22px 48px rgba(16, 36, 58, 0.06);
+  padding: 0.25rem 0 0.75rem;
+  border-bottom: 1px solid rgba(16, 36, 58, 0.08);
 }
 
 .manager-hero h1 {
-  font-size: clamp(2.4rem, 8vw, 5rem);
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 850;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+}
+
+.manager-hero p {
+  max-width: 46rem;
+  margin: 0.45rem 0 0;
+  color: var(--color-muted);
+  line-height: 1.6;
 }
 
 .manager-metric-card,
 .manager-panel,
 .manager-request-row,
 .manager-vendor-card {
-  border: 1px solid rgba(16, 36, 58, 0.08);
-  border-radius: 1.35rem;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 16px 34px rgba(16, 36, 58, 0.05);
+  border: 1px solid rgba(16, 36, 58, 0.09);
+  border-radius: 0.95rem;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(16, 36, 58, 0.04);
 }
 
 .manager-metric-card {
-  padding: 1rem;
+  padding: 0.95rem;
 }
 
 .manager-metric-card span {
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
   color: var(--color-forest);
-  font-size: 2rem;
-  font-weight: 900;
+  font-size: 1.8rem;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+
+.manager-metric-card p {
+  margin: 0;
+  color: rgba(16, 36, 58, 0.62);
+  font-size: 0.9rem;
 }
 
 .manager-panel,
@@ -1779,20 +1799,32 @@ textarea {
 }
 
 .manager-panel-strong {
-  background: linear-gradient(150deg, rgba(227, 238, 247, 0.9), rgba(255, 255, 255, 0.94));
+  border-color: rgba(18, 57, 91, 0.14);
+  background: #f9fbfc;
 }
 
 .vendor-fallback-panel {
   margin-top: 1rem;
   padding: 1rem;
-  border: 1px dashed rgba(18, 57, 91, 0.22);
-  border-radius: 1.2rem;
-  background: rgba(227, 238, 247, 0.45);
+  border: 1px dashed rgba(18, 57, 91, 0.18);
+  border-radius: 0.9rem;
+  background: #f8fafb;
 }
 
 .manager-request-row {
   display: grid;
-  gap: 1rem;
+  gap: 0.8rem;
+  color: inherit;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.manager-request-row:hover {
+  border-color: rgba(18, 57, 91, 0.22);
+  box-shadow: 0 10px 24px rgba(16, 36, 58, 0.06);
+  transform: translateY(-1px);
 }
 
 .manager-row-status,
@@ -1804,12 +1836,12 @@ textarea {
 
 .manager-vendor-facts span {
   display: inline-flex;
-  padding: 0.55rem 0.7rem;
+  padding: 0.45rem 0.6rem;
   border-radius: 999px;
-  background: rgba(18, 57, 91, 0.07);
-  color: var(--color-forest);
-  font-size: 0.86rem;
-  font-weight: 800;
+  background: rgba(18, 57, 91, 0.055);
+  color: rgba(16, 36, 58, 0.78);
+  font-size: 0.8rem;
+  font-weight: 750;
 }
 
 .form-grid {
@@ -1832,9 +1864,10 @@ textarea {
 .trade-toggle {
   border: 1px solid rgba(16, 36, 58, 0.12);
   border-radius: 999px;
-  padding: 0.65rem 0.8rem;
-  background: rgba(255, 255, 255, 0.8);
+  padding: 0.55rem 0.72rem;
+  background: #fff;
   color: var(--color-forest);
+  font-size: 0.82rem;
   font-weight: 800;
 }
 
@@ -1846,6 +1879,7 @@ textarea {
 
 .manager-vendor-form {
   gap: 0.9rem;
+  max-width: 58rem;
 }
 
 .field {
@@ -1862,10 +1896,20 @@ textarea {
 .field textarea {
   width: 100%;
   border: 1px solid rgba(16, 36, 58, 0.12);
-  border-radius: 1rem;
-  padding: 0.9rem 1rem;
-  background: rgba(255, 255, 255, 0.94);
+  border-radius: 0.65rem;
+  padding: 0.78rem 0.85rem;
+  background: #fff;
   color: var(--color-ink);
+}
+
+.manager-panel h2,
+.manager-request-row h2,
+.manager-vendor-card h2 {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
 .field-full {
@@ -1874,7 +1918,7 @@ textarea {
 
 @media (min-width: 880px) {
   .manager-shell {
-    grid-template-columns: 17rem 1fr;
+    grid-template-columns: 15.5rem 1fr;
   }
 
   .manager-sidebar {
@@ -1891,12 +1935,12 @@ textarea {
   }
 
   .manager-content {
-    padding: 1.5rem;
+    padding: 1.75rem 2rem;
   }
 
   .manager-hero {
     grid-template-columns: 1fr auto;
-    align-items: center;
+    align-items: end;
   }
 
   .manager-metric-grid {
@@ -1909,7 +1953,7 @@ textarea {
 
   .manager-dashboard-grid,
   .manager-detail-grid {
-    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
   }
 
   .manager-vendor-grid {
@@ -1921,7 +1965,7 @@ textarea {
   }
 
   .manager-request-row {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
   }
 

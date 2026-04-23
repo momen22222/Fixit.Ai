@@ -11,7 +11,7 @@ export default async function ManagerVendorsPage() {
       <div className="manager-hero">
         <div>
           <p className="eyebrow">Vendor directory</p>
-          <h1>Approved contractors and rates.</h1>
+          <h1>Vendor management</h1>
           <p>
             Vendor selection uses your approved directory first, ranked by trade, service area, reliability, and then
             price. External search is only a backup.
@@ -19,17 +19,14 @@ export default async function ManagerVendorsPage() {
         </div>
       </div>
 
-      <section className="manager-panel manager-panel-strong">
-        <p className="section-tag">Recommendation framework</p>
-        <h2>Approved first, external backup second.</h2>
-        <p>
-          When an issue needs dispatch, Fix it AI recommends the best approved vendor for the property. If no approved
-          vendor covers the trade or area, the manager can search outside candidates and decide whether to add one.
-        </p>
-      </section>
-
       <section className="manager-panel">
         <ManagerVendorForm />
+      </section>
+
+      <section className="manager-panel manager-panel-strong">
+        <p className="section-tag">Directory</p>
+        <h2>{vendors.length} vendors on file</h2>
+        <p>Approved vendors are recommended first. Draft vendors stay in the directory until you are ready to use them.</p>
       </section>
 
       <div className="manager-vendor-grid">

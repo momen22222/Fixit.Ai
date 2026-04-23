@@ -78,8 +78,8 @@ export function ManagerVendorForm() {
     <form className="manager-vendor-form" onSubmit={handleSubmit}>
       <div>
         <p className="section-tag">Build your approved list</p>
-        <h2>Add a vendor</h2>
-        <p>These vendors become the first options Fix it AI recommends before searching outside.</p>
+        <h2>Add vendor</h2>
+        <p>These become the first options Fix it AI recommends before external search.</p>
       </div>
 
       <label className="field">
