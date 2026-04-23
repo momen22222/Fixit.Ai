@@ -1730,6 +1730,7 @@ textarea {
 .manager-screen,
 .manager-dashboard-grid,
 .manager-detail-grid,
+.manager-setup-grid,
 .manager-vendor-grid,
 .manager-conversation-grid,
 .manager-request-table,
@@ -1882,6 +1883,10 @@ textarea {
   max-width: 58rem;
 }
 
+.manager-setup-grid {
+  gap: 1rem;
+}
+
 .field {
   display: grid;
   gap: 0.5rem;
@@ -1952,7 +1957,8 @@ textarea {
   }
 
   .manager-dashboard-grid,
-  .manager-detail-grid {
+  .manager-detail-grid,
+  .manager-setup-grid {
     grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
   }
 

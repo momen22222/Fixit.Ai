@@ -36,6 +36,25 @@ export interface Unit {
   bedrooms: number;
 }
 
+export interface PropertyInput {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
+export interface UnitInput {
+  propertyId: string;
+  label: string;
+  floor: string;
+  bedrooms: number;
+}
+
+export interface PropertyWithUnits extends Property {
+  units: Unit[];
+}
+
 export interface TenantUser {
   id: string;
   name: string;

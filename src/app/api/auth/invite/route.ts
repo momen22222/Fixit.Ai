@@ -11,7 +11,16 @@ export async function POST(request: Request) {
 
   try {
     const invitation = await inviteUser(body);
-    return NextResponse.json({ invitation }, { status: 201 });
+    const origin = new URL(request.url).origin;
+    return NextResponse.json(
+      {
+        invitation: {
+          ...invitation,
+          inviteLink: `${origin}${invitation.inviteLink}`
+        }
+      },
+      { status: 201 }
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to invite user.";
     return NextResponse.json({ error: message }, { status: 400 });

@@ -1,24 +1,51 @@
-export default function ManagerTenantsPage() {
+import { ManagerTenantInviteForm } from "@/components/ManagerTenantInviteForm";
+import { listManagerProperties } from "@/lib/services/property-service";
+
+export const dynamic = "force-dynamic";
+
+export default async function ManagerTenantsPage() {
+  const properties = await listManagerProperties();
+  const unitCount = properties.reduce((count, property) => count + property.units.length, 0);
+
   return (
     <section className="manager-screen">
       <div className="manager-hero">
         <div>
           <p className="eyebrow">Tenants</p>
-          <h1>Invite-only access.</h1>
-          <p>
-            The next production step is a manager invite form that creates the Supabase auth invite and stores the
-            tenant role, property, and unit in app_users.
-          </p>
+          <h1>Tenant onboarding</h1>
+          <p>Create unit-specific invite links so tenants land in the correct property and unit after signup.</p>
         </div>
       </div>
 
+      <div className="manager-metric-grid">
+        <article className="manager-metric-card">
+          <span>{properties.length}</span>
+          <p>Properties</p>
+        </article>
+        <article className="manager-metric-card">
+          <span>{unitCount}</span>
+          <p>Units available</p>
+        </article>
+        <article className="manager-metric-card">
+          <span>14</span>
+          <p>Invite days valid</p>
+        </article>
+        <article className="manager-metric-card">
+          <span>1</span>
+          <p>Unit per invite</p>
+        </article>
+      </div>
+
       <section className="manager-panel">
-        <p className="section-tag">Coming next</p>
-        <h2>Tenant invite workflow</h2>
-        <p>
-          Managers will enter a tenant email, choose a property/unit, and the app will send a magic link that lands the
-          tenant directly in their maintenance app.
-        </p>
+        {unitCount ? (
+          <ManagerTenantInviteForm properties={properties} />
+        ) : (
+          <>
+            <p className="section-tag">Setup needed</p>
+            <h2>Add units before inviting tenants</h2>
+            <p>Go to Properties, create a property, and add units. Then return here to generate tenant invite links.</p>
+          </>
+        )}
       </section>
     </section>
   );

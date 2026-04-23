@@ -3,6 +3,150 @@ import { resolveDataMode } from "@/lib/app-config";
 import { getCurrentSessionUser } from "@/lib/services/auth-service";
 import { listVendorDirectory } from "@/lib/services/vendor-service";
 import { getSupabaseServiceClient } from "@/lib/supabase/client";
+import { type Property, type PropertyInput, type PropertyWithUnits, type Unit, type UnitInput } from "@/lib/maintenance-types";
+
+let mockProperties = [...properties];
+let mockUnits = [...units];
+
+function mapPropertyRow(row: {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  postal_code: string;
+}): Property {
+  return {
+    id: row.id,
+    name: row.name,
+    address: row.address,
+    city: row.city,
+    state: row.state,
+    postalCode: row.postal_code
+  };
+}
+
+function mapUnitRow(row: {
+  id: string;
+  property_id: string;
+  label: string;
+  floor: string | null;
+  bedrooms: number | null;
+}): Unit {
+  return {
+    id: row.id,
+    propertyId: row.property_id,
+    label: row.label,
+    floor: row.floor ?? "",
+    bedrooms: row.bedrooms ?? 0
+  };
+}
+
+export async function listManagerProperties(): Promise<PropertyWithUnits[]> {
+  if (resolveDataMode() === "supabase") {
+    const supabase = getSupabaseServiceClient();
+
+    if (!supabase) {
+      throw new Error("Supabase is not configured.");
+    }
+
+    const [{ data: propertyRows, error: propertyError }, { data: unitRows, error: unitError }] = await Promise.all([
+      supabase.from("properties").select("*").order("name"),
+      supabase.from("units").select("*").order("label")
+    ]);
+
+    if (propertyError || unitError) {
+      throw new Error(propertyError?.message ?? unitError?.message ?? "Unable to load properties.");
+    }
+
+    const mappedUnits = (unitRows ?? []).map(mapUnitRow);
+
+    return (propertyRows ?? []).map((row) => {
+      const property = mapPropertyRow(row);
+      return {
+        ...property,
+        units: mappedUnits.filter((unit) => unit.propertyId === property.id)
+      };
+    });
+  }
+
+  return mockProperties.map((property) => ({
+    ...property,
+    units: mockUnits.filter((unit) => unit.propertyId === property.id)
+  }));
+}
+
+export async function createManagerProperty(input: PropertyInput) {
+  if (resolveDataMode() === "supabase") {
+    const supabase = getSupabaseServiceClient();
+
+    if (!supabase) {
+      throw new Error("Supabase is not configured.");
+    }
+
+    const { data, error } = await supabase
+      .from("properties")
+      .insert({
+        name: input.name,
+        address: input.address,
+        city: input.city,
+        state: input.state,
+        postal_code: input.postalCode
+      })
+      .select("*")
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return mapPropertyRow(data);
+  }
+
+  const property: Property = {
+    id: `prop-${input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+    ...input
+  };
+  mockProperties = [property, ...mockProperties];
+  return property;
+}
+
+export async function createManagerUnit(input: UnitInput) {
+  if (resolveDataMode() === "supabase") {
+    const supabase = getSupabaseServiceClient();
+
+    if (!supabase) {
+      throw new Error("Supabase is not configured.");
+    }
+
+    const { data, error } = await supabase
+      .from("units")
+      .insert({
+        property_id: input.propertyId,
+        label: input.label,
+        floor: input.floor,
+        bedrooms: input.bedrooms
+      })
+      .select("*")
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return mapUnitRow(data);
+  }
+
+  const unit: Unit = {
+    id: `unit-${input.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+    propertyId: input.propertyId,
+    label: input.label,
+    floor: input.floor,
+    bedrooms: input.bedrooms
+  };
+  mockUnits = [unit, ...mockUnits];
+  return unit;
+}
 
 export async function getUnitSummary(unitId: string) {
   if (resolveDataMode() === "supabase") {
